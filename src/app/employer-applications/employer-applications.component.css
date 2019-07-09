@@ -1,0 +1,7 @@
+.list-square {
+    border-radius: 0;
+}
+
+.list-group-item:hover {
+    background-color: #f5f5f5
+}

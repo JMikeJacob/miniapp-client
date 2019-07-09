@@ -1,0 +1,125 @@
+<div class="container border rounded" style="padding:2em;">
+    <div class="page-header">
+        <h3>Create Job Ad</h3>
+    </div>
+    <div class="row">
+        <div class="col">
+          <form [formGroup]="jobForm" (ngSubmit)="onSubmit()">
+              <mat-form-field>
+                  <input matInput id="job_name" formControlName="job_name" type="text" placeholder="Job Name" required>
+
+                <mat-error *ngIf="job_name.errors?.required">
+                        This is a required field.
+                </mat-error>
+              </mat-form-field>
+              <br/>
+              <mat-form-field>
+                <mat-label>Type</mat-label>
+                <mat-select formControlName="type" id="type" name="type" required>
+                    <mat-option *ngFor="let type of type_options" [value]="type">
+                        {{type}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="type.errors?.required">
+                        This is a required field.
+                </mat-error>
+              </mat-form-field>
+              <br/>
+              <mat-form-field>
+                <mat-label>Level</mat-label>
+                <mat-select formControlName="level" id="level" name="level" required>
+                    <mat-option *ngFor="let level of level_options" [value]="level">
+                        {{level}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="level.errors?.required">
+                        This is a required field.
+                </mat-error>
+              </mat-form-field>
+              <br/>
+              <mat-form-field>
+                <mat-label>Job Location</mat-label>
+                <input matInput formControlName="job_location" id="job_location" name="job_location" required>
+                <mat-error *ngIf="job_location.errors?.required">
+                        This is a required field.
+                </mat-error>
+              </mat-form-field>
+              <br/>
+              <mat-form-field>
+                <mat-label>Description</mat-label>
+                <textarea class="form-control" rows="25" matInput formControlName="description" id="description" name="description" placeholder="Please input your description here..." required></textarea>
+                <mat-error *ngIf="description.errors?.required">
+                        This is a required field.
+                </mat-error>
+              </mat-form-field>
+              <br/>
+              <mat-form-field>
+                <mat-label>Deadline</mat-label>
+                <input matInput type="date" id="date_deadline" formControlName="date_deadline" name="date_deadline" placeholder="Choose a date" required/>
+                <!-- <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker> -->
+                <mat-error *ngIf="date_deadline.errors?.required">
+                    This is a required field. Date format is yyyy/MM/dd.
+                </mat-error>
+                <mat-error *ngIf="date_deadline.errors?.invalidDate && !date_deadline.errors?.required">
+                    Deadline should be at least one day after today.
+                </mat-error>
+              </mat-form-field>
+
+              <div formArrayName="tags">
+                <h4>Skills</h4>
+                <a class="btn btn-secondary" (click)="addTag()">Add Skill</a>
+                <mat-form-field *ngFor="let item of tags.controls; let i = index">
+                    <mat-select formControlName="{{i}}" id="level" name="level">
+                        <ng-container *ngFor="let level of level_options">
+                            <mat-option value='{"tag": "{{level}}", "tag_type": "skill"}'>
+                                {{level}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+              </div>
+
+              <button class="btn btn-primary" type="submit" [disabled]="!jobForm.valid">Submit</button>
+          </form>
+        </div>
+    </div>
+</div>
+        
+<!-- <div *ngIf="invalid" class="alert alert-danger">
+        Invalid email and/or password.
+    </div>
+    <div class="form-group">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <label>
+                Email:
+                <input class="form-control" type="text" id="email" formControlName="email" />
+                <div *ngIf="email.invalid && (email.dirty || email.touched)"
+                class="alert alert-danger">
+                    <div *ngIf="email.errors.required">
+                            Required
+                    </div>
+                    <div *ngIf="email.errors.email">
+                        Invalid Email
+                    </div>
+                </div>
+            </label>
+            <br />
+            <label>
+                Password:
+                <input class="form-control" type="password" id="password" formControlName="password" />
+                <div *ngIf="password.invalid && (password.dirty || password.touched)"
+                class="alert alert-danger">
+                    <div *ngIf="password.errors.required">
+                        Required
+                    </div>
+                    <div *ngIf="password.errors.minlength && !password.errors.required">
+                        Password must be 8 or more characters long.
+                    </div>
+                </div>
+            </label>
+            <br />
+            <button type="submit" [disabled]="!loginForm.valid">Submit</button>
+            
+        </form>
+    </div> -->

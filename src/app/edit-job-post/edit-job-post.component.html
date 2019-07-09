@@ -1,0 +1,106 @@
+<div class="container border rounded" style="padding:2em;">
+    <div class="page-header">
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-info" (click)="goBack()">Cancel Edit</button>
+            </div>
+        </div>
+        <h3>Edit Job Ad</h3>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form [formGroup]="jobForm" (ngSubmit)="onSubmit()">
+                <mat-form-field>
+                    <mat-label>Job Name</mat-label>
+                    <input matInput id="job_name" formControlName="job_name" type="text">
+
+                <mat-error *ngIf="job_name.errors?.required">
+                        This is a required field.
+                </mat-error>
+                </mat-form-field>
+                <br/>
+                <mat-form-field>
+                    <mat-label>Accepting applications?</mat-label>
+                    <mat-select formControlName="is_open" id="is_open" name="is_open">
+                        <mat-option value="yes">
+                            Yes
+                        </mat-option>
+                        <mat-option value="no">
+                            No
+                        </mat-option>
+                    </mat-select>                
+                </mat-form-field>
+                <br />
+                <mat-form-field>
+                    <mat-label>Type</mat-label>
+                    <select matNativeControl formControlName="type" id="type" name="type">
+                        <option *ngFor="let type of type_options" [value]="type">
+                            {{type}}
+                        </option>
+                    </select>
+                    <mat-error *ngIf="type.errors?.required">
+                            This is a required field.
+                    </mat-error>
+                </mat-form-field>
+                <br/>
+                <mat-form-field>
+                    <mat-label>Level</mat-label>
+                    <select matNativeControl formControlName="level" id="level" name="level">
+                        <option *ngFor="let level of level_options" [value]="level">
+                            {{level}}
+                        </option>
+                    </select>
+                    <mat-error *ngIf="level.errors?.required">
+                            This is a required field.
+                    </mat-error>
+                </mat-form-field>
+                <br/>
+                <mat-form-field>
+                    <mat-label>Job Location</mat-label>
+                    <input matInput formControlName="job_location" id="job_location" name="job_location">
+                    <mat-error *ngIf="job_location.errors?.required">
+                            This is a required field.
+                    </mat-error>
+                </mat-form-field>
+                <br/>
+                    <mat-form-field>
+                        <mat-label>Description</mat-label>
+                       <textarea matInput rows="5" formControlName="description">
+                        </textarea>
+                        <mat-error *ngIf="description.errors?.required">
+                                This is a required field.
+                        </mat-error>
+                    </mat-form-field>
+                    
+                <br/>
+                <mat-form-field>
+                    <mat-label>Deadline</mat-label>
+                    <input matInput type="date" id="date_deadline" formControlName="date_deadline" name="date_deadline" />
+                    <mat-error *ngIf="date_deadline.errors?.required">
+                        This is a required field. Date format is DD/MM/YYYY
+                    </mat-error>
+                    <mat-error *ngIf="date_deadline.errors?.invalidDate && !date_deadline.errors?.required">
+                        Deadline should be set on or after the date today.
+                    </mat-error>
+                </mat-form-field>
+                <br />
+
+                <div formArrayName="tags">
+                    <h4>Skills</h4>
+                    <a class="btn btn-secondary" (click)="addTag()">Add Skill</a>
+                    <a class="btn btn-secondary" (click)="showValues()">Log Skill</a>
+                    <mat-form-field *ngFor="let item of tags.controls; let i = index">
+                        <mat-select formControlName="{{i}}" id="level" name="level">
+                            <ng-container *ngFor="let level of level_options">
+                                <mat-option value='{"tag": "{{level}}", "tag_type": "skill"}'>
+                                    {{level}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <button mat-button type="submit" [disabled]="!jobForm.valid">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>

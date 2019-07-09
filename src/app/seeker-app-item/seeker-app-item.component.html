@@ -1,0 +1,17 @@
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 my-auto">
+                <a routerLink="../../jobs/post/{{app.job_id}}">{{app.job_name}}</a><br/>
+                <p> {{app.company_name}}</p>
+                <p>Applied on {{app.date_posted | date}}</p>
+        </div>
+        <div class="col-sm-6 text-right my-auto" style="margin-top:0.5em;">
+            <div *ngIf="!post_closed">
+                <span [ngClass]="app.status" class="align-text-middle" >{{app.status | uppercase}}</span>
+            </div>
+            <div *ngIf="post_closed">
+                <span class="closed align-text-middle" >CLOSED</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="container">
+    <div *ngIf="no_company">
+        <div class="row">
+            <div class="col">
+                Company does not exist.
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!no_company">
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col-sm-6">
+                <p>{{company.name}}<br/>
+                {{company.website}}<br/>
+                {{company.location}}</p>
+            </div>
+            <div class="col-sm-6 float-sm-right" *ngIf="company.establishment_date">
+                Established on {{company.establishment_date | date}}
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col">
+                <div class = "description">
+                    <p>{{company.description}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col">
+                <div class = "contact">
+                    <p>Email: {{company.email}}</p>
+                    <p>Contact #: {{company.contact_no}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

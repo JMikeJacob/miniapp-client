@@ -1,0 +1,29 @@
+import { Component, OnInit } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
+import { Router } from '@angular/router'
+
+@Component({
+  selector: 'app-general',
+  templateUrl: './general.component.html',
+  styleUrls: ['./general.component.css']
+})
+export class GeneralComponent implements OnInit {
+
+  constructor(
+    public cookieService: CookieService,
+    private router: Router
+  ) { }
+
+  ngOnInit() {
+    if(this.cookieService.get('role')) {
+      const role = this.cookieService.get('role')
+      if(role === "employer") {
+        this.router.navigate([`../employer/dashboard`])
+      }      
+      if(role === "seeker") {
+        this.router.navigate([`../seeker/jobs/1`])
+      }
+    }
+  }
+
+}

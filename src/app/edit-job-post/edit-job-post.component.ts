@@ -1,0 +1,198 @@
+import { Component, OnInit, Input } from '@angular/core'
+import { Location, DatePipe } from '@angular/common'
+import { FormGroup, FormControl, Validators, FormArray, AbstractControl, NgControlStatusGroup, ValidationErrors } from '@angular/forms'
+import { JobService } from '../job.service'
+import { Router, ActivatedRoute } from '@angular/router'
+import { Job } from '../job'
+import { dateValidator } from '../shared/date-validator.directive'
+// import { DuplicateValidatorDirective } from '../shared/duplicate-validator.directive'
+
+//testing
+import { CookieService } from 'ngx-cookie-service'
+
+// import { Levels } from '../levels'
+// import { Types } from '../types'
+
+const levels = [
+  'Internship / OJT',
+  'Fresh Grad / Entry Level',
+  'Associate / Supervisor',
+  'Mid-Senior Level / Manager',
+  'Director / Executive'
+]
+
+const types = [
+  'Temporary',
+  'Part-Time',
+  'Full-Time',
+  'Contract',
+  'Freelance'
+]
+@Component({
+  selector: 'app-edit-job-post',
+  templateUrl: './edit-job-post.component.html',
+  styleUrls: ['./edit-job-post.component.css']
+})
+export class EditJobPostComponent implements OnInit {
+  job: any
+  type_options: string[]
+  level_options: string[]
+  posted_by_id: number
+  date_posted: number
+  qualifications: string //temporary
+  job_post: any
+
+  jobForm: FormGroup 
+  job_name: FormControl
+  type: FormControl
+  level: FormControl
+  job_location: FormControl
+  description: FormControl
+  // qualifications: FormControl
+  date_deadline: FormControl
+  is_open: FormControl
+  
+  tags: FormArray
+  tag: FormControl
+
+  //testing
+  id: number
+
+  constructor(public jobService: JobService,
+              private router: Router,
+              private route: ActivatedRoute,
+              private location: Location,
+              public cookieService: CookieService //testing
+              ) { }
+
+  ngOnInit() {
+    this.job = {}
+    this.route.params.subscribe((res) => {
+      this.id = res.id
+      this.getJobPost()
+    })
+    this.posted_by_id = +this.cookieService.get('posted_by_id') //testing
+    this.type_options = types
+    this.level_options = levels
+    // this.type_options = this.types.types
+    // this.level_options = this.levels.levels
+    this.qualifications = "" //temp
+    this.tag = new FormControl('', [
+      Validators.required
+    ])
+    this.job_name = new FormControl('', [
+      Validators.required
+    ])
+    this.type = new FormControl('', [
+      Validators.required
+    ])
+    this.level = new FormControl('', [ 
+      Validators.required
+    ])
+    this.job_location = new FormControl('', [
+      Validators.required
+    ])
+    this.description = new FormControl('', [
+      Validators.required
+    ])
+    // this.qualifications = new FormControl('', [
+    //   Validators.required
+    // ])
+    this.date_deadline = new FormControl('', [
+      Validators.required,
+      dateValidator()
+    ])
+    this.is_open = new FormControl('', [
+      Validators.required
+    ])
+    this.tags = new FormArray([], [this.showValues()])
+    this.jobForm = new FormGroup({
+      'job_name': this.job_name,
+      'type': this.type,
+      'level': this.level,
+      'job_location': this.job_location,
+      'description': this.description,
+      'date_deadline': this.date_deadline,
+      'is_open': this.is_open,
+      'tags': this.tags
+    })
+    
+  }
+
+  addTag() {
+    this.tags.push(new FormControl('', [Validators.required]))
+  }
+
+  showValues() {
+    return (form: FormArray): ValidationErrors | null => {
+      console.log(form.length)
+      if(form.length > 1) {
+        let counts = []
+        for(let i = 0; i < form.length; i++) {
+          console.log(form.controls[i].value)
+          if(!counts[form.controls[i].value]) {
+            counts[form.controls[i].value] = 1
+          }
+          else {
+            console.log("duplicate")
+            return {'duplicateValue': {value: form.controls[i].value}}
+          }
+        }
+      }
+
+      return null
+  }
+}
+
+  getJobPost() {
+    this.jobService.getJobPost(this.id).subscribe(
+      (res) => {
+        console.log(res)
+        const dp = new DatePipe(navigator.language)
+        this.job = res.data
+        this.jobForm.patchValue({
+          job_name: res.data.job_name,
+          type: res.data.type,
+          level: res.data.level,
+          job_location: res.data.job_location,
+          description:res.data.description,
+          date_deadline: dp.transform(new Date(res.data.date_deadline), 'yyyy-MM-dd'),
+          is_open: res.data.is_open
+        })
+      },
+      (err) => {
+        console.error(err)
+        // console.log("yo")
+      }
+    )
+  }
+
+  onSubmit() {
+    console.log(this.jobForm.value)
+    this.job_post = this.jobForm.value
+    this.job_post.posted_by_id = this.posted_by_id
+    this.job_post.qualifications = this.qualifications
+    this.job_post.date_deadline = new Date(this.job_post.date_deadline).getTime()
+    console.log(new Date(this.job_post.date_deadline))
+    this.job_post.date_posted = new Date().getTime()
+    this.job_post.company = this.cookieService.get('company') //testing
+
+    // this.job_post.description = this.job_post.description.replace("\n", "<br>")
+
+    console.log(this.job_post)
+    this.jobService.editJobPost(this.id, this.job_post).subscribe(
+      (res) => {
+        console.log(res)
+        alert("Job Post Updated!")
+        this.location.back()
+      },
+      (err) => {
+        console.error(err)
+      }
+    )
+  }
+
+  goBack() {
+    this.location.back()
+  }
+}

@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-info" (click)="goBack()">Return to Job Board</button>
+        </div>
+    </div>
+    <div *ngIf="no_job">
+        <div class="row">
+            <div class="col">
+                Job post does not exist.
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!no_job">
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col-sm-6">
+                {{job.job_name}}<br/>
+                {{job.company_name}}<br/>
+                {{job.job_location}}
+            </div>
+            <div class="col-sm-6 float-sm-right">
+                Posted on {{job.date_posted | date}} <br/>
+                Posted until {{job.date_deadline | date}}
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col">
+                <div class = "description">
+                    {{job.description}}
+                </div>
+                <div class = "qualifications">
+                    {{job.qualifications}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

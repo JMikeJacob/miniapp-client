@@ -1,0 +1,12 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-6">
+                <a routerLink="../post/{{job.job_id}}">{{job.job_name}}</a><br/>
+                <a routerLink="../../company/{{job.posted_by_id}}">{{job.company_name}}</a><br/>
+        </div>
+        <div class="col-sm-6">
+                Posted on {{job.date_posted | date}}<br/>
+                Posted until {{job.date_deadline | date}}
+        </div>
+    </div>
+</div>
