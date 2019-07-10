@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-4 my-auto">
-                <p>{{app.last_name}}, {{app.first_name}}</p>
+                <p><a routerLink="../../seekers/{{app.user_id}}">{{app.last_name}}, {{app.first_name}}</a></p>
                 <p><a routerLink="../../jobs/post/{{app.job_id}}">{{app.job_name}}</a></p>
                 <p>Applied on {{app.date_posted | date}}</p>
         </div>

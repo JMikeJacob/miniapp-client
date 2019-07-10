@@ -44,6 +44,14 @@ export class JobService {
     )
   }
 
+  getRecommendedJobs(id:number, start:number, limit?:number): Observable<any> {
+    let url = `${this.serverUrl}/seeker/recommended/${id}/${start}?=`
+    if(limit) url += `&limit=${limit}`
+    return this.http.get(url, httpOptions).pipe(
+      catchError(this.handleError<any>('getRecommendedJobs'))
+    )
+  }
+
   getJobsPerPageEmployer(id:number, start:number, limit?:number, order?:string, how?: string): Observable<any> {
     let url = `${this.serverUrl}/employer/jobs/page/${start}?=`
     if(limit) url += `&limit=${limit}`
@@ -85,7 +93,7 @@ export class JobService {
 
   deleteJobPost(id:number): Observable<any> {
     return this.http.delete(`${this.serverUrl}/employer/jobs/${id}`, httpOptions).pipe(
-      catchError(this.handleError<any>('editJobPost'))
+      catchError(this.handleError<any>('deleteJobPost'))
     )
   }
 
@@ -97,6 +105,12 @@ export class JobService {
 
   checkIfApplied(appli: any): Observable<any> {
     return this.http.get(`${this.serverUrl}/jobs/application/${appli.job_id}/${appli.user_id}`,  httpOptions)
+  }
+
+  deleteApplication(id: number): Observable<any> {
+    return this.http.delete(`${this.serverUrl}/jobs/application/${id}`, httpOptions).pipe(
+      catchError(this.handleError<any>('deleteApplication'))
+    )
   }
 
   getApplicationsSeeker(user_id: any, page:any): Observable<any> {

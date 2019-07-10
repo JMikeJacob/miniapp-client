@@ -26,10 +26,12 @@ import { SeekerJobBoardComponent } from './seeker-job-board/seeker-job-board.com
 import { SeekerJobPostComponent } from './seeker-job-post/seeker-job-post.component'
 import { SeekerApplicationsComponent } from './seeker-applications/seeker-applications.component';
 import { SeekerProfileComponent } from './seeker-profile/seeker-profile.component'
+import { SeekerRecommendedComponent } from './seeker-recommended/seeker-recommended.component'
 import { EditSeekerProfileComponent } from './edit-seeker-profile/edit-seeker-profile.component'
 import { EditSeekerComponent } from './edit-seeker/edit-seeker.component'
 
 import { CompanyComponent } from './company/company.component';
+import { ProfileComponent } from './profile/profile.component'
 
 const routes: Routes = [
   { path: '', component: GeneralComponent, children: [
@@ -55,7 +57,8 @@ const routes: Routes = [
     { path: 'jobs', children: [
       { path: '', redirectTo: '1', pathMatch:'full' },
       { path: ':page', component: SeekerJobBoardComponent },
-      { path: 'post/:id', component: SeekerJobPostComponent },
+      { path: 'recommended/:page', component:SeekerRecommendedComponent },
+      { path: 'post/:id', component: SeekerJobPostComponent }
     ]},
     { path: 'company/:id', component: CompanyProfileComponent },
     { path: '**', redirectTo: 'jobs'}
@@ -77,6 +80,7 @@ const routes: Routes = [
       { path: ':page', component: EmployerJobBoardComponent },
       { path: 'post/:id', component: EmployerJobPostComponent }
     ] },
+    { path: 'seekers/:id', component: ProfileComponent },
     { path: 'apps/:page', component: EmployerApplicationsComponent },
     { path: '**', redirectTo: 'dashboard' },
   ]},

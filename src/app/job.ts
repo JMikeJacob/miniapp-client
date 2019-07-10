@@ -13,5 +13,6 @@ export class Job {
     is_open: string
     date_posted: number
     date_deadline: number
+    count?: number
     tags: Tag[]
 }

@@ -5,6 +5,7 @@ import { Location } from '@angular/common'
 import { CookieService } from 'ngx-cookie-service'
 import { JobService } from '../job.service'
 import { Job } from '../job'
+import { EditJobPostService } from '../edit-job-post.service'
 
 
 @Component({
@@ -23,6 +24,7 @@ export class EmployerJobPostComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
+    public editJobPostService: EditJobPostService,
     private cookieService: CookieService //testing
   ) { }
 
@@ -58,7 +60,8 @@ export class EmployerJobPostComponent implements OnInit {
   }
 
   toEdit() {
-    this.router.navigate([`../employer/jobs/edit/${this.job.job_id}`])
+    this.editJobPostService.loadJob(this.job)
+    this.router.navigate([`../employer/jobs/edit/${this.job.job_id}`], {state: this.job})
   }
 
   toDelete() {

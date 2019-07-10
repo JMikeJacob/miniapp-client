@@ -1,6 +1,6 @@
 <div class="container">
     <div class="row">
-        <div class="col">
+        <div class="col-sm-6 float-sm-left">
             <button class="btn btn-info" (click)="goBack()">Return to Job Board</button>
         </div>
     </div>
@@ -14,7 +14,7 @@
     <div *ngIf="!no_job">
         <div class="row border border-black" style="padding:1em;margin:1em;">
             <div class="col-sm-6">
-                {{job.job_name}}<br/>
+                <h3>{{job.job_name}}</h3>
                 {{job.company_name}}<br/>
                 {{job.job_location}}
             </div>
@@ -24,12 +24,40 @@
             </div>
         </div>
         <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col-sm-6">
+                <p>Type: {{job.type}}</p>
+            </div>
+            <div class="col-sm-6">
+                <p>Level: {{job.level}}</p>
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
             <div class="col">
                 <div class = "description">
-                    {{job.description}}
+                    <p>{{job.description}}</p>
                 </div>
                 <div class = "qualifications">
                     {{job.qualifications}}
+                </div>
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col">
+                <h5>Skills</h5>
+                <div class = "description">
+                    <p *ngFor="let skill of skills">
+                        {{skill}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col">
+                <h5>Fields</h5>
+                <div class = "description">
+                    <p *ngFor="let field of fields">
+                        {{field}}
+                    </p>
                 </div>
             </div>
         </div>

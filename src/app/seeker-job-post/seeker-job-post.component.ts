@@ -15,8 +15,11 @@ export class SeekerJobPostComponent implements OnInit {
   @Input() job: Job
   no_job: boolean
   applied: string
+  app_id: number
   user_id: number
   job_id: number
+  skills: string[]
+  fields: string[]
   constructor(
     private jobService: JobService,
     private route: ActivatedRoute,
@@ -28,6 +31,8 @@ export class SeekerJobPostComponent implements OnInit {
   ngOnInit() {
     this.applied = "no"
     this.no_job = true
+    this.skills = []
+    this.fields = []
     this.getJobPost()
   }
 
@@ -38,6 +43,14 @@ export class SeekerJobPostComponent implements OnInit {
         console.log(res)
         this.no_job = false
         this.job = res.data
+        for(let i = 0; i < this.job.tags.length; i++) {
+          if(this.job.tags[i].tag_type === "skill") {
+            this.skills.push(this.job.tags[i].tag)
+          }
+          else if(this.job.tags[i].tag_type === "field") {
+            this.fields.push(this.job.tags[i].tag)
+          }
+        }
         this.job_id = res.data.job_id
         this.user_id = +this.cookieService.get('user_id')
         this.checkIfApplied()
@@ -55,6 +68,7 @@ export class SeekerJobPostComponent implements OnInit {
       (res) => {
         console.log(res)
         this.applied = res.applied
+        this.app_id = res.app_id
       },
       (err) => {
         console.error(err)
@@ -71,10 +85,23 @@ export class SeekerJobPostComponent implements OnInit {
     }).subscribe(
       (res) => {
         console.log(res)
+        this.app_id = res.app_id
         this.applied = "yes"
       },
       (err) => {
         console.log(err)
+      }
+    )
+  }
+
+  withdraw() {
+    this.jobService.deleteApplication(this.app_id).subscribe(
+      (res) => {
+        alert("Application withdrawn!")
+        this.applied = "no"
+      },
+      (err) => {
+        console.error(err)
       }
     )
   }

@@ -8,6 +8,9 @@
                 <ng-container *ngIf="applied==='no'">Apply For Job</ng-container>
                 <ng-container *ngIf="applied==='yes'">Already Applied</ng-container>
             </button>
+            <button class="btn btn-danger float-sm-right" *ngIf="applied==='yes'" (click)="withdraw()">
+                Withdraw Application
+            </button>
         </div>
     </div>
     <div *ngIf="no_job">
@@ -30,12 +33,40 @@
             </div>
         </div>
         <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col-sm-6">
+                <p>Type: {{job.type}}</p>
+            </div>
+            <div class="col-sm-6">
+                <p>Level: {{job.level}}</p>
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
             <div class="col">
                 <div class = "description">
                     {{job.description}}
                 </div>
                 <div class = "qualifications">
                     {{job.qualifications}}
+                </div>
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col">
+                <h5>Skills</h5>
+                <div class = "description">
+                    <p *ngFor="let skill of skills">
+                        {{skill}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row border border-black" style="padding:1em;margin:1em;">
+            <div class="col">
+                <h5>Fields</h5>
+                <div class = "description">
+                    <p *ngFor="let field of fields">
+                        {{field}}
+                    </p>
                 </div>
             </div>
         </div>

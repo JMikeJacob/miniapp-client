@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core'
+import { Location } from '@angular/common'
 import { Observable } from 'rxjs'
+import { ActivatedRoute } from '@angular/router'
 import { Seeker } from '../seeker'
 import { SeekerService } from '../seeker.service'
-import { CookieService } from 'ngx-cookie-service'
 
 @Component({
-  selector: 'app-seeker-profile',
-  templateUrl: './seeker-profile.component.html',
-  styleUrls: ['./seeker-profile.component.css']
+  selector: 'app-profile',
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.css']
 })
-export class SeekerProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit {
 
   seeker:Seeker
   id: number
@@ -17,14 +18,19 @@ export class SeekerProfileComponent implements OnInit {
   fields: string[]
 
   constructor(private seekerService: SeekerService,
-              private cookieService: CookieService) { }
+              private location: Location,
+              private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.skills = []
     this.fields = []
     this.seeker = new Seeker()
-    this.id = +this.cookieService.get('user_id')
+    this.id = +this.route.snapshot.paramMap.get('id')
     this.getSeekerProfile(this.id)
+  }
+
+  goBack() {
+    this.location.back()
   }
   
   getSeekerProfile(id:number) {

@@ -47,7 +47,11 @@ import { EditSeekerComponent } from './edit-seeker/edit-seeker.component';
 import { EditSeekerProfileComponent } from './edit-seeker-profile/edit-seeker-profile.component';
 import { SeekerProfileComponent } from './seeker-profile/seeker-profile.component';
 import { DuplicateValidatorDirective } from './shared/duplicate-validator.directive';
-
+import { SeekerRecommendedComponent } from './seeker-recommended/seeker-recommended.component';
+import { SeekerRecommendedAdComponent } from './seeker-recommended-ad/seeker-recommended-ad.component';
+import { ProfileComponent } from './profile/profile.component';
+import { OptionsService } from './options.service';
+import { EditJobPostService } from './edit-job-post.service';
 
 @NgModule({
   declarations: [
@@ -88,7 +92,10 @@ import { DuplicateValidatorDirective } from './shared/duplicate-validator.direct
     EditSeekerComponent,
     EditSeekerProfileComponent,
     SeekerProfileComponent,
-    DuplicateValidatorDirective
+    DuplicateValidatorDirective,
+    SeekerRecommendedComponent,
+    SeekerRecommendedAdComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -102,7 +109,10 @@ import { DuplicateValidatorDirective } from './shared/duplicate-validator.direct
   ],
   providers: [
     CookieService,
-    EstablishmentValidatorDirective
+    EstablishmentValidatorDirective,
+    DuplicateValidatorDirective,
+    OptionsService,
+    EditJobPostService
   ],
   bootstrap: [AppComponent]
 })

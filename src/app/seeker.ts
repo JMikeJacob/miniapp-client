@@ -10,8 +10,20 @@ export class Seeker {
     firstname?: string
     contact_no?: string
     contact?: string
-    salary?: number
+    salary_per_month?: number
     resume?: string
     gender?: string
-    tags?: Tag[]
+    birthdate?: number
+    education?: string
+    level?: string
+    tags?: any[]
+    skills?: Tag[]
+    fields?: Tag[]
+
+    constructor() {
+        this.id = null
+        this.email = ""
+        this.last_name = ""
+        this.first_name = ""
+    }
 }
