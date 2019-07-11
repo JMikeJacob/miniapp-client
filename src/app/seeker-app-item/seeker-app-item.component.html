@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-sm-6 my-auto">
                 <a routerLink="../../jobs/post/{{app.job_id}}">{{app.job_name}}</a><br/>
-                <p> {{app.company_name}}</p>
+                <a routerLink="../../company/{{app.posted_by_id}}">{{app.company_name}}</a><br/>
                 <p>Applied on {{app.date_posted | date}}</p>
         </div>
         <div class="col-sm-6 text-right my-auto" style="margin-top:0.5em;">

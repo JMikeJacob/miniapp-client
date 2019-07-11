@@ -21,7 +21,7 @@
                 <mat-form-field>
                     <mat-label>Gender</mat-label>
                     <select matNativeControl formControlName="gender" id="gender" name="gender">
-                        <option *ngFor="let gender of genders" [value]="gender">
+                        <option *ngFor="let gender of gender_options" [value]="gender">
                             {{gender}}
                         </option>
                     </select>           

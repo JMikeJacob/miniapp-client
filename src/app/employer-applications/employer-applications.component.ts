@@ -28,6 +28,7 @@ export class EmployerApplicationsComponent implements OnInit {
   ngOnInit() {
     // this.count = NaN
     // this.getPageNumber()
+    this.apps = []
     this.route.params.subscribe((res) => {
       this.page = res.page
       this.id = +this.cookieService.get('posted_by_id')

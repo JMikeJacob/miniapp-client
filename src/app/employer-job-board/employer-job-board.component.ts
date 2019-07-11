@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
-import { Observable } from 'rxjs'
+import { Observable, of } from 'rxjs'
 import { ActivatedRoute, Router } from '@angular/router'
 import { PageEvent } from '@angular/material/paginator'
 
@@ -18,7 +18,7 @@ export class EmployerJobBoardComponent implements OnInit {
   // @Output() job_ad: EventEmitter<Job> = new EventEmitter()
   logged_in: boolean
   jobs: Job[]
-  count: Observable<any>
+  count: number
   page: number
   routePage: number
   pageEvent = PageEvent
@@ -33,6 +33,7 @@ export class EmployerJobBoardComponent implements OnInit {
             ) { }
 
   ngOnInit() {
+    this.count = 0
     this.id = +this.cookieService.get('posted_by_id')
     // this.getJobCountEmployer()
     this.logged_in = false

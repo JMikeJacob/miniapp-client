@@ -52,6 +52,7 @@ import { SeekerRecommendedAdComponent } from './seeker-recommended-ad/seeker-rec
 import { ProfileComponent } from './profile/profile.component';
 import { OptionsService } from './options.service';
 import { EditJobPostService } from './edit-job-post.service';
+import { ErrorModalComponent } from './error-modal/error-modal.component';
 
 @NgModule({
   declarations: [
@@ -95,7 +96,8 @@ import { EditJobPostService } from './edit-job-post.service';
     DuplicateValidatorDirective,
     SeekerRecommendedComponent,
     SeekerRecommendedAdComponent,
-    ProfileComponent
+    ProfileComponent,
+    ErrorModalComponent
   ],
   imports: [
     BrowserModule,

@@ -29,6 +29,7 @@ export class JobBoardComponent implements OnInit {
 
   ngOnInit() {
     // this.getJobCount()
+    this.jobs = []
     this.logged_in = false
     // this.count = NaN
     // this.getPageNumber()
@@ -64,7 +65,9 @@ export class JobBoardComponent implements OnInit {
       (res) => {
         console.log(res.data)
         this.count = res.data.count
-        this.jobs = res.data.jobs
+        if(res.data.jobs) {
+          this.jobs = res.data.jobs
+        }
       },
       (err) => {
         console.error(err)

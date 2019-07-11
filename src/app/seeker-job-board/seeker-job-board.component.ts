@@ -26,6 +26,7 @@ export class SeekerJobBoardComponent implements OnInit {
   ngOnInit() {
     // this.count = NaN
     // this.getPageNumber()
+    this.jobs = []
     this.route.params.subscribe((res) => {
       this.page = res.page
       if(isNaN(this.page)) {
@@ -57,7 +58,9 @@ export class SeekerJobBoardComponent implements OnInit {
       (res) => {
         console.log(res.data)
         this.count = res.data.count
-        this.jobs = res.data.jobs
+        if(res.data.jobs) {
+          this.jobs = res.data.jobs
+        }
       },
       (err) => {
         console.error(err)

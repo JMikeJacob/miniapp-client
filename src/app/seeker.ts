@@ -2,6 +2,7 @@ import { Tag } from './tag'
 
 export class Seeker {
     id: number | null
+    user_id?: number
     email: string
     password?: string
     last_name: string

@@ -29,6 +29,7 @@ export class SeekerRecommendedComponent implements OnInit {
   ngOnInit() {
     // this.count = NaN
     // this.getPageNumber()
+    this.jobs = []
     this.route.params.subscribe((res) => {
       this.id = +this.cookieService.get('user_id')
       this.page = res.page

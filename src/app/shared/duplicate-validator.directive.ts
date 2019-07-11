@@ -10,7 +10,7 @@ export class DuplicateValidatorDirective {
   
   duplicateValidator() {
     return (form: FormArray): {[key:string]: any} | null => {
-      console.log(form.length)
+      // console.log(form.length)
       if(form.length > 1) {
         let counts = []
         for(let i = 0; i < form.length; i++) {

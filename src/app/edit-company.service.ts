@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Job } from './job'
+import { Company } from './company'
 import { Observable, of, throwError } from 'rxjs'
 import { tap, catchError } from 'rxjs/operators'
 
@@ -11,34 +11,34 @@ const httpOptions = {
 @Injectable({
   providedIn: 'root'
 })
-export class EditJobPostService {
+export class EditCompanyService {
 
-  job: Job
+  company: Company
   private serverUrl = 'http://localhost:3000'
   constructor(private http: HttpClient) { }
 
-  loadJob(dst: string, id:number): Observable<any> {
-    if(this.job) {
-      console.log(this.job)
-      this.job.job_id = id
-      return of({data: this.job})
+  loadCompany(dst: string, id:number): Observable<any> {
+    if(this.company) {
+      console.log(this.company)
+      this.company.company_id = id
+      return of({success: {data: this.company}})
     }
     else {
       console.log("ohoho")
-      return this.http.get<Job>(`${this.serverUrl}/jobs/post/${id}`, httpOptions).pipe(
-        tap(data => this.job = data),
-        catchError(this.handleError<any>('loadData'))
+      return this.http.get<any>(`${this.serverUrl}/company/${id}`).pipe(
+        tap(res => this.company = res.success.data),
+        catchError(this.handleError<Company>('getCompanyProfile'))
       )
     }
   }
 
-  sendJob(job: Job) {
-    this.job = job
-    return this.job
+  sendCompany(company: Company) {
+    this.company = company
+    return this.company
   }
 
-  delJob() {
-    this.job = null
+  delCompany() {
+    this.company = null
   }
 
   private handleError<T> (operation = 'operation', result?: T) {

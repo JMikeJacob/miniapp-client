@@ -74,10 +74,6 @@ export class EditJobPostComponent implements OnInit {
         console.error(err)
       }
     )
-    this.route.params.subscribe((res) => {
-      this.id = res.id
-      this.getJobPost()
-    })
     this.posted_by_id = +this.cookieService.get('posted_by_id') //testing
     
     this.tag = new FormControl('', [
@@ -127,6 +123,10 @@ export class EditJobPostComponent implements OnInit {
       'fields': this.fields
     })
     // this.getJobPost()
+    this.route.params.subscribe((res) => {
+      this.id = res.id
+      this.getJobPost()
+    })
   }
 
 
@@ -157,10 +157,36 @@ export class EditJobPostComponent implements OnInit {
     this.fields.removeAt(i)
   }
 
+  // getJobPost() {
+  //   this.jobService.getJobPost(this.id).subscribe(
+  //     (res) => {
+  //       console.log(res)
+  //       const dp = new DatePipe(navigator.language)
+  //       this.job = res.data
+  //       this.jobForm.patchValue({
+  //         job_name: res.data.job_name,
+  //         type: res.data.type,
+  //         level: res.data.level,
+  //         job_location: res.data.job_location,
+  //         description:res.data.description,
+  //         qualifications: res.data.qualifications,
+  //         date_deadline: dp.transform(new Date(res.data.date_deadline), 'yyyy-MM-dd'),
+  //         is_open: res.data.is_open
+  //       })
+  //       this.setTags(res.data.tags)
+  //     },
+  //     (err) => {
+  //       console.error(err)
+  //       // console.log("yo")
+  //     }
+  //   )
+  // }
+
   getJobPost() {
-    this.jobService.getJobPost(this.id).subscribe(
+    this.job = this.editJobPostService.loadJob("edit", this.id).subscribe(
       (res) => {
-        console.log(res)
+        console.error(res)
+        this.editJobPostService.sendJob(res.data)
         const dp = new DatePipe(navigator.language)
         this.job = res.data
         this.jobForm.patchValue({
@@ -181,23 +207,6 @@ export class EditJobPostComponent implements OnInit {
       }
     )
   }
-
-  // getJobPost() {
-  //   this.job = this.editJobPostService.getJob()
-  //   console.error(this.job)
-  //   const dp = new DatePipe(navigator.language)
-  //   this.jobForm.patchValue({
-  //     job_name: this.job.job_name,
-  //     type: this.job.type,
-  //     level: this.job.level,
-  //     job_location: this.job.job_location,
-  //     description:this.job.description,
-  //     qualifications: this.job.qualifications,
-  //     date_deadline: dp.transform(new Date(this.job.date_deadline), 'yyyy-MM-dd'),
-  //     is_open: this.job.is_open
-  //   })
-  //   this.setTags(this.job.tags)
-  // }
 
   onSubmit() {
     console.log(this.jobForm.value)
@@ -223,6 +232,7 @@ export class EditJobPostComponent implements OnInit {
     console.log(this.job_post)
     this.jobService.editJobPost(this.id, this.job_post).subscribe(
       (res) => {
+        this.editJobPostService.sendJob(this.job_post)
         console.log(res)
         alert("Job Post Updated!")
         this.location.back()

@@ -6,6 +6,7 @@ import { CookieService } from 'ngx-cookie-service'
 import { JobService } from '../job.service'
 import { CompanyService } from '../company.service'
 import { Company } from '../company'
+import { EditCompanyService } from '../edit-company.service'
 
 @Component({
   selector: 'app-company',
@@ -22,6 +23,7 @@ export class CompanyComponent implements OnInit {
     private router: Router,
     private location: Location,
     private companyService: CompanyService,
+    private editCompanyService: EditCompanyService,
     private cookieService: CookieService //testing
   ) { }
 
@@ -31,9 +33,30 @@ export class CompanyComponent implements OnInit {
     this.getCompanyProfile(this.id)
   }
 
+  // getCompanyProfile(id:number) {
+  //   this.companyService.getCompanyProfile(id).subscribe(
+  //     (res) => {
+  //       this.no_company = false
+  //       this.company = res.success.sdata
+
+  //       console.log(this.company)
+  //       if(!this.company.website) this.company.website="URL not provided."
+  //       if(!this.company.location) this.company.location="Location not provided."
+  //       if(!this.company.description) this.company.description="Description not provided."
+  //     },
+  //     (err) => {
+  //       console.error(err)
+  //       // console.log("yo")
+  //       this.no_company = true
+  //     }
+  //   )
+  // }
+
   getCompanyProfile(id:number) {
-    this.companyService.getCompanyProfile(id).subscribe(
+    this.editCompanyService.loadCompany("post", id).subscribe(
       (res) => {
+        console.log(res)
+        this.editCompanyService.delCompany()
         this.no_company = false
         this.company = res.success.data
 
@@ -51,6 +74,7 @@ export class CompanyComponent implements OnInit {
   }
 
   toEdit() {
+    this.editCompanyService.sendCompany(this.company)
     this.router.navigate([`../employer/company/edit`])
   }
 

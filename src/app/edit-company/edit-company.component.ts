@@ -7,6 +7,7 @@ import { Company } from '../company'
 import { contactValidator } from '../shared/contact-validator.directive'
 import { dateValidator } from '../shared/date-validator.directive'
 import { EstablishmentValidatorDirective } from '../shared/establishment-validator.directive'
+import { EditCompanyService } from '../edit-company.service'
 
 //testing
 import { CompanyService } from '../company.service'
@@ -24,6 +25,7 @@ export class EditCompanyComponent implements OnInit {
   posted_by_id: number
   date_posted: number
   qualifications: string //temporary
+  email: string
 
   companyForm: FormGroup 
   name: FormControl
@@ -32,7 +34,6 @@ export class EditCompanyComponent implements OnInit {
   establishment_date: FormControl
   description: FormControl
   contact_no: FormControl
-
   //testing
   id: number
 
@@ -42,12 +43,12 @@ export class EditCompanyComponent implements OnInit {
               private Location: Location,
               public companyService: CompanyService,
               private establishmentValidatorDirective: EstablishmentValidatorDirective,
+              private editCompanyService: EditCompanyService,
               public cookieService: CookieService //testing
               ) { }
 
   ngOnInit() {
     this.posted_by_id = +this.cookieService.get('posted_by_id') //testing
-    this.getCompanyProfile(this.posted_by_id)
     // this.type_options = this.types.types
     // this.level_options = this.levels.levels
     this.qualifications = "" //temp
@@ -75,16 +76,16 @@ export class EditCompanyComponent implements OnInit {
       'establishment_date': this.establishment_date,
       'contact_no': this.contact_no
     })
-    
-    
+    this.getCompanyProfile(this.posted_by_id)
   }
 
   getCompanyProfile(id:number) {
-    this.companyService.getCompanyProfile(id).subscribe(
+    this.editCompanyService.loadCompany("edit", id).subscribe(
       (res) => {
         console.log(res)
         const dp = new DatePipe(navigator.language)
         this.company = res.success.data
+        this.email = res.success.data.email
         let estdate = res.success.data.establishment_date || null
         if(estdate) estdate = dp.transform(new Date(res.success.data.establishment_date), 'yyyy-MM-dd')
         this.companyForm.patchValue({
@@ -109,6 +110,10 @@ export class EditCompanyComponent implements OnInit {
     this.companyService.editCompanyProfile(this.posted_by_id, this.companyForm.value).subscribe(
       (res) => {
         console.log(res)
+        const company = this.companyForm.value
+        company.email = this.email
+        company.posted_by_id = this.posted_by_id
+        this.editCompanyService.sendCompany(this.companyForm.value)
         alert("Company Profile Updated!")
         this.Location.back()
       },

@@ -5,6 +5,7 @@ import { Router } from '@angular/router'
 import { EstablishmentValidatorDirective } from '../shared/establishment-validator.directive'
 import { DuplicateValidatorDirective } from '../shared/duplicate-validator.directive'
 
+import { EditSeekerProfileService } from '../edit-seeker-profile.service'
 import { SeekerService } from '../seeker.service'
 import { CookieService } from 'ngx-cookie-service'
 
@@ -62,6 +63,7 @@ export class EditSeekerProfileComponent implements OnInit {
   education: FormControl
   level: FormControl
   salary_per_month: FormControl
+  tmpSeeker: Seeker
 
   constructor(private location: Location,
               private seekerService: SeekerService,
@@ -69,6 +71,7 @@ export class EditSeekerProfileComponent implements OnInit {
               private duplicateValidatorDirective: DuplicateValidatorDirective,
               private cookieService: CookieService,
               private optionService: OptionsService,
+              private editSeekerProfileService: EditSeekerProfileService,
               private router: Router) { }
 
   ngOnInit() {
@@ -86,7 +89,6 @@ export class EditSeekerProfileComponent implements OnInit {
       }
     )
     this.id = +this.cookieService.get('user_id')
-    this.getSeekerProfile(this.id)
     this.contact_no = new FormControl('', [
       contactValidator(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/)
     ])
@@ -113,6 +115,7 @@ export class EditSeekerProfileComponent implements OnInit {
       'skills': this.skills,
       'fields': this.fields
     })
+    this.getSeekerProfile(this.id)
   }
 
   setTags(tags: any[]) {
@@ -127,12 +130,57 @@ export class EditSeekerProfileComponent implements OnInit {
     }
   }
 
+  // getSeekerProfile(id:number) {
+  //   this.seekerService.getSeekerProfile(id).subscribe(
+  //     (res) => {
+  //       console.log(res)
+  //       const dp = new DatePipe(navigator.language)
+  //       this.seeker = res.data
+  //       this.profileForm.patchValue({
+  //         'contact_no': res.data.contact_no,
+  //         'gender': res.data.gender,
+  //         'birthdate': dp.transform(new Date(res.data.birthdate), 'yyyy-MM-dd'),
+  //         'education': res.data.education,
+  //         'level': res.data.level,
+  //         'salary_per_month': res.data.salary_per_month
+  //       })
+  //       this.setTags(res.data.tags)
+  //     },
+  //     (err) => {
+  //       console.error(err)
+  //     }
+  //   )
+  // }
+
+  // getSeekerProfile(id:number) {
+  //   this.seekerService.getSeekerProfile(id).subscribe(
+  //     (res) => {
+  //       console.log(res)
+  //       const dp = new DatePipe(navigator.language)
+  //       this.seeker = res.data
+  //       this.profileForm.patchValue({
+  //         'contact_no': res.data.contact_no,
+  //         'gender': res.data.gender,
+  //         'birthdate': dp.transform(new Date(res.data.birthdate), 'yyyy-MM-dd'),
+  //         'education': res.data.education,
+  //         'level': res.data.level,
+  //         'salary_per_month': res.data.salary_per_month
+  //       })
+  //       this.setTags(res.data.tags)
+  //     },
+  //     (err) => {
+  //       console.error(err)
+  //     }
+  //   )
+  // }
+
   getSeekerProfile(id:number) {
-    this.seekerService.getSeekerProfile(id).subscribe(
+    this.editSeekerProfileService.loadProfile("edit", id).subscribe(
       (res) => {
         console.log(res)
         const dp = new DatePipe(navigator.language)
         this.seeker = res.data
+        this.tmpSeeker = res.data
         this.profileForm.patchValue({
           'contact_no': res.data.contact_no,
           'gender': res.data.gender,
@@ -189,6 +237,11 @@ export class EditSeekerProfileComponent implements OnInit {
     this.seekerService.editSeekerProfile(this.id, this.seeker).subscribe(
       (res) => {
         console.log(res)
+        this.seeker.user_id = this.id
+        this.seeker.last_name = this.tmpSeeker.last_name
+        this.seeker.first_name = this.tmpSeeker.first_name
+        this.seeker.email = this.tmpSeeker.email
+        this.editSeekerProfileService.sendProfile(this.seeker)
         alert("Seeker Profile Updated!")
         this.location.back()
       },
