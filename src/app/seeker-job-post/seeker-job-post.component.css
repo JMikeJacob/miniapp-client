@@ -1,3 +1,11 @@
 .btn {
     margin:1em;
 }
+
+.description {
+    white-space: pre;
+}
+
+.qualifications {
+    white-space: pre;
+}

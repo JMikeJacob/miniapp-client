@@ -32,9 +32,9 @@ export class EditSeekerProfileService {
     }
   }
 
-  sendProfile(seeker: Seeker) {
+  sendProfile(seeker: Seeker): Observable<any> {
     this.seeker = seeker
-    return this.seeker
+    return of(this.seeker)
   }
 
   delProfile() {

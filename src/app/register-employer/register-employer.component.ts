@@ -64,7 +64,7 @@ export class RegisterEmployerComponent implements OnInit {
       (data) => {
         alert('Registration complete!')
         console.log(data) //show modal
-        this.router.navigate(['/login?role=employer'])
+        this.router.navigate(['/login'], {queryParams: {"role": "employer"}})
       },
       (err) => {
         console.log(err)

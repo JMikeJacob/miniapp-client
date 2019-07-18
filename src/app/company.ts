@@ -7,4 +7,6 @@ export class Company {
     location?: string | "Location not provided"
     email?: string
     contact_no? : string
+    pic_url?: string
+    edited?: boolean
 }

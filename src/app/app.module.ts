@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http'
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CustomMaterialModule } from './custom-material-module/custom-material-module.module'
+import { QuillModule } from 'ngx-quill'
 import { CookieService } from 'ngx-cookie-service'
 
 import { AppComponent } from './app.component';
@@ -53,6 +54,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { OptionsService } from './options.service';
 import { EditJobPostService } from './edit-job-post.service';
 import { ErrorModalComponent } from './error-modal/error-modal.component';
+import { ChoiceModalComponent } from './choice-modal/choice-modal.component';
+import { LoadingComponent } from './loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -97,7 +100,9 @@ import { ErrorModalComponent } from './error-modal/error-modal.component';
     SeekerRecommendedComponent,
     SeekerRecommendedAdComponent,
     ProfileComponent,
-    ErrorModalComponent
+    ErrorModalComponent,
+    ChoiceModalComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,
@@ -107,7 +112,8 @@ import { ErrorModalComponent } from './error-modal/error-modal.component';
     HttpClientModule,
     CustomMaterialModule,
     NgbPaginationModule,
-    NgbModalModule
+    NgbModalModule,
+    QuillModule.forRoot()
   ],
   providers: [
     CookieService,
@@ -116,6 +122,10 @@ import { ErrorModalComponent } from './error-modal/error-modal.component';
     OptionsService,
     EditJobPostService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    ChoiceModalComponent,
+    LoadingComponent
+  ]
 })
 export class AppModule { }

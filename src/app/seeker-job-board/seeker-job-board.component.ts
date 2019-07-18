@@ -13,6 +13,7 @@ import { JobService } from '../job.service'
 })
 export class SeekerJobBoardComponent implements OnInit {
   jobs: Job[]
+  loading: boolean
   count: Observable<any>
   page: number
   routePage: number
@@ -27,6 +28,7 @@ export class SeekerJobBoardComponent implements OnInit {
     // this.count = NaN
     // this.getPageNumber()
     this.jobs = []
+    this.loading = true
     this.route.params.subscribe((res) => {
       this.page = res.page
       if(isNaN(this.page)) {
@@ -40,17 +42,17 @@ export class SeekerJobBoardComponent implements OnInit {
     })
   }
 
-  getAllJobs() {
-    this.jobService.getAllJobs().subscribe(
-      (res) => {
-        console.log(res.data)
-        this.jobs = res.data
-      },
-      (err) => {
-        console.error(err)
-      }
-    )
-  }
+  // getAllJobs() {
+  //   this.jobService.getAllJobs().subscribe(
+  //     (res) => {
+  //       console.log(res.data)
+  //       this.jobs = res.data
+  //     },
+  //     (err) => {
+  //       console.error(err)
+  //     }
+  //   )
+  // }
 
   getJobsByPage(page:number) {
     // const start = 10 * (this.page - 1)
@@ -61,6 +63,7 @@ export class SeekerJobBoardComponent implements OnInit {
         if(res.data.jobs) {
           this.jobs = res.data.jobs
         }
+        this.loading = false
       },
       (err) => {
         console.error(err)

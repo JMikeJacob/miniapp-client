@@ -12,7 +12,6 @@ export class Seeker {
     contact_no?: string
     contact?: string
     salary_per_month?: number
-    resume?: string
     gender?: string
     birthdate?: number
     education?: string
@@ -20,6 +19,9 @@ export class Seeker {
     tags?: any[]
     skills?: Tag[]
     fields?: Tag[]
+    pic_url?: string
+    resume_url?: string
+    edited?: boolean
 
     constructor() {
         this.id = null

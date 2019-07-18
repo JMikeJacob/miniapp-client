@@ -13,6 +13,7 @@ import { JobService } from '../job.service'
   styleUrls: ['./employer-applications.component.css']
 })
 export class EmployerApplicationsComponent implements OnInit {
+  loading: boolean
   apps: any[]
   count: Observable<any>
   page: number
@@ -28,6 +29,7 @@ export class EmployerApplicationsComponent implements OnInit {
   ngOnInit() {
     // this.count = NaN
     // this.getPageNumber()
+    this.loading = true
     this.apps = []
     this.route.params.subscribe((res) => {
       this.page = res.page
@@ -50,6 +52,7 @@ export class EmployerApplicationsComponent implements OnInit {
         console.log(res.data)
         this.count = res.data.count
         this.apps = res.data.apps
+        this.loading = false
       },
       (err) => {
         console.error(err)

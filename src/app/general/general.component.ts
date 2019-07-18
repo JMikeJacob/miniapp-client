@@ -18,7 +18,7 @@ export class GeneralComponent implements OnInit {
     if(this.cookieService.get('role')) {
       const role = this.cookieService.get('role')
       if(role === "employer") {
-        this.router.navigate([`../employer/dashboard`])
+        this.router.navigate([`../employer/jobs/1`])
       }      
       if(role === "seeker") {
         this.router.navigate([`../seeker/jobs/1`])

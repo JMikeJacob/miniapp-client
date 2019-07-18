@@ -15,6 +15,7 @@ import { CookieService } from 'ngx-cookie-service'
 export class SeekerRecommendedComponent implements OnInit {
   jobs: Job[]
   id: number
+  loading: boolean
   count: Observable<any>
   page: number
   routePage: number
@@ -30,6 +31,7 @@ export class SeekerRecommendedComponent implements OnInit {
     // this.count = NaN
     // this.getPageNumber()
     this.jobs = []
+    this.loading = true
     this.route.params.subscribe((res) => {
       this.id = +this.cookieService.get('user_id')
       this.page = res.page
@@ -51,6 +53,7 @@ export class SeekerRecommendedComponent implements OnInit {
         console.log(res.data)
         this.count = res.data.count
         this.jobs = res.data.jobs
+        this.loading = false
       },
       (err) => {
         console.error(err)

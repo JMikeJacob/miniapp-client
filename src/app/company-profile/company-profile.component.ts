@@ -14,6 +14,8 @@ import { Company } from '../company'
 })
 export class CompanyProfileComponent implements OnInit {
   @Input() company: Company
+  pic_url: string
+  loading: boolean
   no_company: boolean
   id: number
   constructor(
@@ -26,6 +28,7 @@ export class CompanyProfileComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.loading = true
     this.no_company = true
     this.route.params.subscribe(
       (res) => {
@@ -38,18 +41,30 @@ export class CompanyProfileComponent implements OnInit {
   getCompanyProfile(id:number) {
     this.companyService.getCompanyProfile(id).subscribe(
       (res) => {
-        this.no_company = false
         this.company = res.success.data
-
         console.log(this.company)
         if(!this.company.website) this.company.website="URL not provided."
         if(!this.company.location) this.company.location="Location not provided."
         if(!this.company.description) this.company.description="Description not provided."
+        this.no_company = false
+        this.loading = false
+        if(res.success.data.pic_url) {
+          if(res.success.data.pic_url === "") {
+            this.pic_url = '../../assets/img/placeholder.png'
+          }
+          else {
+            this.pic_url = res.success.data.pic_url
+          }
+        }
+        else {
+          this.pic_url = '../../assets/img/placeholder.png'
+        }
       },
       (err) => {
         console.error(err)
         // console.log("yo")
         this.no_company = true
+        this.loading = false
       }
     )
   }

@@ -82,7 +82,8 @@ export class LoginComponent implements OnInit {
           this.cookieService.set('posted_by_id', data.user.user_id, null, '/')
           this.cookieService.set('company', data.user.company_name, null, '/')
           /* */
-          this.router.navigate(['/employer/dashboard'])
+          // this.router.navigate(['/employer/dashboard'])
+          this.router.navigate(['/employer/jobs'])
       }, (err) => {
         console.log(err)
         this.invalid = true

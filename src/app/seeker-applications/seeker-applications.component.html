@@ -2,29 +2,31 @@
     <div class="page-header">
         <h2>Applications</h2>
     </div>
-    <div *ngIf="hasApps">
-        <div class="row">
-            <div class="col">
-                <div class="list-group">
-                    <ng-container *ngFor="let app of apps">
-                        <div class="list-group-item">
-                            <app-seeker-app-item [app]=app></app-seeker-app-item>
-                        </div>
-                    </ng-container>
+    <div *ngIf="!loading">
+        <div *ngIf="hasApps">
+            <div class="row">
+                <div class="col">
+                    <div class="list-group">
+                        <ng-container *ngFor="let app of apps">
+                            <div class="list-group-item">
+                                <app-seeker-app-item [app]=app></app-seeker-app-item>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <mat-paginator #paginator [length]="count"
+                        [pageSize]="10"
+                        [pageIndex]="page - 1"
+                        (page)= "pageEvent = loadPage($event)"
+                    ></mat-paginator>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <mat-paginator #paginator [length]="count"
-                    [pageSize]="10"
-                    [pageIndex]="page - 1"
-                    (page)= "pageEvent = loadPage($event)"
-                ></mat-paginator>
-            </div>
+        <div *ngIf="!hasApps">
+            <p>You haven't applied for any jobs yet.</p>
         </div>
-    </div>
-    <div *ngIf="!hasApps">
-        <p>You haven't applied for any jobs yet.</p>
     </div>
 </div>

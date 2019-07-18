@@ -63,18 +63,6 @@ export class JobService {
     )
   }
 
-  getJobCount(): Observable<any> {
-    return this.http.get(`${this.serverUrl}/jobs/count`, httpOptions).pipe(
-      catchError(this.handleError<any>('getJobCount'))
-    )
-  }
-
-  getJobCountEmployer(id:number): Observable<any> {
-    return this.http.get(`${this.serverUrl}/employer/jobs/count?posted_by_id=${id}`, {withCredentials:true}).pipe(
-      catchError(this.handleError<any>('getJobCount'))
-    )
-  }
-
   createJobPost(job: Job): Observable<any> {
     return this.http.post(`${this.serverUrl}/employer/jobs/new`, job, httpOptions).pipe(
       catchError(this.handleError<any>('createJobPost'))
@@ -86,10 +74,6 @@ export class JobService {
       catchError(this.handleError<any>('editJobPost'))
     )
   }
-
-  // editJobTags(id:number, job:Job): Observable<any> {
-  //   return this.http.put()
-  // }
 
   deleteJobPost(id:number): Observable<any> {
     return this.http.delete(`${this.serverUrl}/employer/jobs/${id}`, httpOptions).pipe(

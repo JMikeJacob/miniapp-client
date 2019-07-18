@@ -4,60 +4,76 @@
             <button class="btn btn-info" (click)="goBack()">Return to Job Board</button>
         </div>
     </div>
-    <div *ngIf="no_job">
-        <div class="row">
-            <div class="col">
-                Job post does not exist.
-            </div>
-        </div>
-    </div>
-    <div *ngIf="!no_job">
-        <div class="row border border-black" style="padding:1em;margin:1em;">
-            <div class="col-sm-6">
-                <h3>{{job.job_name}}</h3>
-                {{job.company_name}}<br/>
-                {{job.job_location}}
-            </div>
-            <div class="col-sm-6 float-sm-right">
-                Posted on {{job.date_posted | date}} <br/>
-                Posted until {{job.date_deadline | date}}
-            </div>
-        </div>
-        <div class="row border border-black" style="padding:1em;margin:1em;">
-            <div class="col-sm-6">
-                <p>Type: {{job.type}}</p>
-            </div>
-            <div class="col-sm-6">
-                <p>Level: {{job.level}}</p>
-            </div>
-        </div>
-        <div class="row border border-black" style="padding:1em;margin:1em;">
-            <div class="col">
-                <div class = "description">
-                    <p>{{job.description}}</p>
-                </div>
-                <div class = "qualifications">
-                    {{job.qualifications}}
+    <div *ngIf="!loading">
+        <div *ngIf="no_job">
+            <div class="row">
+                <div class="col">
+                    Job post does not exist.
                 </div>
             </div>
         </div>
-        <div class="row border border-black" style="padding:1em;margin:1em;">
-            <div class="col">
-                <h5>Skills</h5>
-                <div class = "description">
-                    <p *ngFor="let skill of skills">
-                        {{skill}}
-                    </p>
+        <div *ngIf="!no_job">
+            <div class="row border border-black" style="padding:1em;margin:1em;">
+                <div class="col">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3>{{job.job_name}}</h3>
+                        </div>
+                        <div class="col-sm-6 float-sm-right text-sm-right">
+                            <h6 class="font-weight-light">Posted on {{+job.date_posted | date}}</h6>
+                            <h6 class="font-weight-light" >Open until {{+job.date_deadline | date}}</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <p>{{job.company_name}}</p>
+                            <p>{{job.job_location}}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row border border-black" style="padding:1em;margin:1em;">
-            <div class="col">
-                <h5>Fields</h5>
-                <div class = "description">
-                    <p *ngFor="let field of fields">
-                        {{field}}
-                    </p>
+            <div class="row border border-black" style="padding:1em;margin:1em;">
+                <div class="col-sm-6">
+                    <p>Type: {{job.type}}</p>
+                </div>
+                <div class="col-sm-6">
+                    <p>Level: {{job.level}}</p>
+                </div>
+            </div>
+            <div class="row border border-black" style="padding:1em;margin:1em;">
+                <div class="col">
+                    <h5>Job Description</h5>
+                    <div class = "description">
+                        <quill-view [content]="job.description"></quill-view>
+                    </div>
+                </div>
+            </div>
+            <div class="row border border-black" style="padding:1em;margin:1em;">
+                <div class="col">
+                    <h5>Qualifications</h5>
+                    <div class = "qualifications">
+                        <quill-view [content]="job.qualifications"></quill-view>
+                    </div>
+                </div>    
+            </div>
+            <div class="row border border-black" style="padding:1em;margin:1em;">
+                <div class="col">
+                    <h5>Skills</h5>
+                    <div class = "description">
+                        <p *ngFor="let skill of skills">
+                            {{skill}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row border border-black" style="padding:1em;margin:1em;">
+                <div class="col">
+                    <h5>Fields</h5>
+                    <div class = "description">
+                        <p *ngFor="let field of fields">
+                            {{field}}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

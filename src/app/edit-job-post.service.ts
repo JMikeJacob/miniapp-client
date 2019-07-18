@@ -32,9 +32,9 @@ export class EditJobPostService {
     }
   }
 
-  sendJob(job: Job) {
+  sendJob(job: Job): Observable<any> {
     this.job = job
-    return this.job
+    return of(this.job)
   }
 
   delJob() {

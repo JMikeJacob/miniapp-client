@@ -10,6 +10,26 @@
     <div class="row">
         <div class="col">
             <form [formGroup]="companyForm" (ngSubmit)="onSubmit()">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h6>Change Profile Picture: 
+                            <div  class="inputWrapperPhoto btn btn-link" style="margin:auto;">
+                                Upload Photo
+                                <input class="fileInput" type="file" formControlName="image" (change)="onFileChange($event)" accept="image/jpeg,image/png"/>
+                            </div>
+                        </h6>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom:1em;">
+                    <div class="col-sm-12">
+                        <div *ngIf="pic_url !== 'none'">
+                            <img class="img img-responsive img-thumbnail" style="width:180px;height:180px;" [src]="pic_url" alt="profile picture" />
+                        </div>
+                        <mat-error *ngIf="image.errors?.invalidFormat">
+                            File must be in .jpeg or .png format.
+                        </mat-error>
+                    </div>
+                </div>
                 <mat-form-field>
                     <mat-label>Company Name</mat-label>
                     <input matInput id="name" formControlName="name" type="text" required >
@@ -29,10 +49,12 @@
                     <input matInput formControlName="location" id="location" name="location">
                 </mat-form-field>
                 <br/>
-                <mat-form-field>
                     <mat-label>Description</mat-label>
-                    <textarea matInput rows="10" formControlName="description"></textarea>
-                </mat-form-field>
+                    <quill-editor
+                        #descriptionQuill
+                        [styles]="{'height':'10em'}"
+                        [formControl]="companyForm.controls['description']">
+                    </quill-editor>
                 <br/>
                 <mat-form-field>
                     <mat-label>Date Established</mat-label>

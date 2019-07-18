@@ -16,6 +16,7 @@ import { JobService } from '../job.service'
 export class SeekerApplicationsComponent implements OnInit {
   apps: any[]
   count: Observable<any>
+  loading: boolean
   hasApps: boolean
   page: number
   id: number
@@ -30,6 +31,7 @@ export class SeekerApplicationsComponent implements OnInit {
   ngOnInit() {
     // this.count = NaN
     // this.getPageNumber()
+    this.loading = true
     this.hasApps = false
     this.route.params.subscribe((res) => {
       this.page = res.page
@@ -55,6 +57,7 @@ export class SeekerApplicationsComponent implements OnInit {
           this.apps = res.data.apps
           this.hasApps = true
         }
+        this.loading = false
       },
       (err) => {
         console.error(err)

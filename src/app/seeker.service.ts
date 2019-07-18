@@ -60,7 +60,7 @@ export class SeekerService {
   }
 
   editSeekerProfile(id: number, seeker: Seeker): Observable<any> {
-    return this.http.put<Seeker>(`${this.serverUrl}/seeker/profile/${id}`, seeker, httpOptions).pipe(
+    return this.http.put<any>(`${this.serverUrl}/seeker/profile/${id}`, seeker, httpOptions).pipe(
       catchError(this.handleError<Seeker>('editSeekerProfile'))
     )
   }

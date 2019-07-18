@@ -63,23 +63,25 @@
                     </mat-error>
                 </mat-form-field>
                 <br/>
-                <mat-form-field>
                     <mat-label>Description</mat-label>
-                    <textarea matInput rows="15" formControlName="description">
-                    </textarea>
+                    <quill-editor
+                        #descriptionQuill
+                        [styles]="{'height':'15em'}"
+                        [formControl]="jobForm.controls['description']">
+                    </quill-editor>
                     <mat-error *ngIf="description.errors?.required">
                             This is a required field.
                     </mat-error>
-                </mat-form-field>
                 <br/>
-                <mat-form-field>
                     <mat-label>Qualifications</mat-label>
-                    <textarea matInput rows="15" formControlName="qualifications">
-                    </textarea>
+                    <quill-editor
+                    #qualificationsQuill
+                    [styles]="{'height':'15em'}"
+                    [formControl]="jobForm.controls['qualifications']">
+                    </quill-editor>
                     <mat-error *ngIf="qualifications.errors?.required">
                             This is a required field.
                     </mat-error>
-                </mat-form-field>
                 <br/>
                 <mat-form-field>
                     <mat-label>Deadline</mat-label>

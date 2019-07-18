@@ -15,4 +15,5 @@ export class Job {
     date_deadline: number
     count?: number
     tags: Tag[]
+    edited?: boolean
 }

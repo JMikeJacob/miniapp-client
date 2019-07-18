@@ -1,11 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators, Form, FormArray } from '@angular/forms'
-import { JobService } from '../job.service'
 import { Router } from '@angular/router'
+import { QuillEditorComponent } from 'ngx-quill'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
 import { dateValidator } from '../shared/date-validator.directive'
 import { DuplicateValidatorDirective } from '../shared/duplicate-validator.directive'
 import { OptionsService } from '../options.service'
-//testing
+import { JobService } from '../job.service'
 import { CookieService } from 'ngx-cookie-service'
 
 @Component({
@@ -37,6 +39,14 @@ export class CreateJobPostComponent implements OnInit {
   tag: FormControl
   skills: FormArray
   fields: FormArray
+
+  @ViewChild('descriptionQuill', {
+    static: true
+  }) descriptionQuill: QuillEditorComponent
+
+  @ViewChild('qualificationsQuill', {
+    static: true
+  }) qualificationsQuill: QuillEditorComponent
 
   //testing
   id: number
@@ -103,6 +113,26 @@ export class CreateJobPostComponent implements OnInit {
       'skills': this.skills,
       'fields': this.fields
     })
+
+    this.jobForm.controls.description.valueChanges.pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      ).subscribe()
+
+    this.descriptionQuill.onContentChanged.pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      ).subscribe()
+
+    this.jobForm.controls.qualifications.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe()
+
+    this.qualificationsQuill.onContentChanged.pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      ).subscribe()
   }
 
   addSkill() {

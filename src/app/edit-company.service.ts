@@ -32,9 +32,9 @@ export class EditCompanyService {
     }
   }
 
-  sendCompany(company: Company) {
+  sendCompany(company: Company): Observable<any> {
     this.company = company
-    return this.company
+    return of(this.company)
   }
 
   delCompany() {

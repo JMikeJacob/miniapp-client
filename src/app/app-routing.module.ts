@@ -65,8 +65,8 @@ const routes: Routes = [
     // { path: 'dashboard', component: EmployerDashboardComponent }
   ]},
   { path: 'employer', component: EmployerComponent, children: [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full'},
-    { path: 'dashboard', component: EmployerDashboardComponent },
+    { path: '', redirectTo: 'jobs', pathMatch: 'full'},
+    // { path: 'dashboard', component: EmployerDashboardComponent },
     { path: 'account', component: EditEmployerComponent },
     { path: 'company', children: [
       { path: '', component: CompanyComponent },

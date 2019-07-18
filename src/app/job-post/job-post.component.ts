@@ -14,6 +14,7 @@ import { Job } from '../job'
 })
 export class JobPostComponent implements OnInit {
   @Input() job: Job
+  loading: boolean
   no_job: boolean
   skills: string[]
   fields: string[]
@@ -24,6 +25,7 @@ export class JobPostComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.loading = true
     this.no_job = true
     this.skills = []
     this.fields = []
@@ -35,7 +37,6 @@ export class JobPostComponent implements OnInit {
     this.jobService.getJobPost(id).subscribe(
       (res) => {
         console.log(res)
-        this.no_job = false
         this.job = res.data
         for(let i = 0; i < this.job.tags.length; i++) {
           if(this.job.tags[i].tag_type === "skill") {
@@ -45,11 +46,14 @@ export class JobPostComponent implements OnInit {
             this.fields.push(this.job.tags[i].tag)
           }
         }
+        this.no_job = false
+        this.loading = false
       },
       (err) => {
         console.error(err)
         // console.log("yo")
         this.no_job = true
+        this.loading = false
       }
     )
   }

@@ -1,17 +1,28 @@
-import { Component, OnInit, Input } from '@angular/core'
+import { Component, OnInit, Input, ViewChild } from '@angular/core'
 import { Location, DatePipe } from '@angular/common'
 import { FormGroup, FormControl, Validators, Form } from '@angular/forms'
 import { JobService } from '../job.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Company } from '../company'
 import { contactValidator } from '../shared/contact-validator.directive'
-import { dateValidator } from '../shared/date-validator.directive'
 import { EstablishmentValidatorDirective } from '../shared/establishment-validator.directive'
+import { DuplicateValidatorDirective } from '../shared/duplicate-validator.directive'
 import { EditCompanyService } from '../edit-company.service'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { QuillEditorComponent } from 'ngx-quill'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
-//testing
 import { CompanyService } from '../company.service'
 import { CookieService } from 'ngx-cookie-service'
+import { FileService } from '../file.service'
+
+import { LoadingComponent } from '../loading/loading.component'
+
+const image_exts = [
+  "jpeg",
+  "jpg",
+  "png"
+]
 
 @Component({
   selector: 'app-edit-company',
@@ -26,6 +37,10 @@ export class EditCompanyComponent implements OnInit {
   date_posted: number
   qualifications: string //temporary
   email: string
+  pic: string
+  pic_url: string
+  tmp_url: string
+  file: any
 
   companyForm: FormGroup 
   name: FormControl
@@ -34,8 +49,13 @@ export class EditCompanyComponent implements OnInit {
   establishment_date: FormControl
   description: FormControl
   contact_no: FormControl
+  image: FormControl
   //testing
   id: number
+
+  @ViewChild('descriptionQuill', {
+    static: true
+  }) descriptionQuill: QuillEditorComponent
 
   constructor(public jobService: JobService,
               private router: Router,
@@ -43,11 +63,16 @@ export class EditCompanyComponent implements OnInit {
               private Location: Location,
               public companyService: CompanyService,
               private establishmentValidatorDirective: EstablishmentValidatorDirective,
+              private duplicateValidatorDirective: DuplicateValidatorDirective,
               private editCompanyService: EditCompanyService,
+              public fileService: FileService,
+              public modalService: NgbModal,
               public cookieService: CookieService //testing
               ) { }
 
   ngOnInit() {
+    this.pic_url = "none"
+    this.pic = ""
     this.posted_by_id = +this.cookieService.get('posted_by_id') //testing
     // this.type_options = this.types.types
     // this.level_options = this.levels.levels
@@ -68,15 +93,29 @@ export class EditCompanyComponent implements OnInit {
       Validators.required,
       contactValidator(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/)
     ])
+    this.image = new FormControl('', [
+      this.duplicateValidatorDirective.fileValidator(image_exts)
+    ])
     this.companyForm = new FormGroup({
       'name': this.name,
       'website': this.website,
       'location': this.location,
       'description': this.description,
       'establishment_date': this.establishment_date,
-      'contact_no': this.contact_no
+      'contact_no': this.contact_no,
+      'image': this.image
     })
     this.getCompanyProfile(this.posted_by_id)
+
+    this.companyForm.controls.description.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe()
+
+    this.descriptionQuill.onContentChanged.pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      ).subscribe()
   }
 
   getCompanyProfile(id:number) {
@@ -87,7 +126,7 @@ export class EditCompanyComponent implements OnInit {
         this.company = res.success.data
         this.email = res.success.data.email
         let estdate = res.success.data.establishment_date || null
-        if(estdate) estdate = dp.transform(new Date(res.success.data.establishment_date), 'yyyy-MM-dd')
+        if(estdate) estdate = dp.transform(new Date(+res.success.data.establishment_date), 'yyyy-MM-dd')
         this.companyForm.patchValue({
           name: res.success.data.name,
           website: res.success.data.website,
@@ -96,6 +135,19 @@ export class EditCompanyComponent implements OnInit {
           establishment_date: estdate,
           contact_no: res.success.data.contact_no
         })
+        if(res.success.data.pic_url) {
+          if(res.success.data.pic_url === "") {
+            this.pic_url = '../../assets/img/placeholder.png'
+          }
+          else {
+            this.pic_url = res.success.data.pic_url
+            this.tmp_url = this.pic_url
+          }
+        }
+        else {
+          this.pic_url = '../../assets/img/placeholder.png'
+        }
+        this.editCompanyService.delCompany()
       },
       (err) => {
         console.error(err)
@@ -104,18 +156,66 @@ export class EditCompanyComponent implements OnInit {
     )
   }
 
+  onFileChange(event) {
+    if (event.target.files && event.target.files[0]) {
+      var reader = new FileReader()
+
+      const [file] = event.target.files
+      const ext = file.name.split('.')[file.name.split('.').length-1]
+      if(image_exts.includes(ext)) {
+        this.file = file
+        this.pic = file.name
+      }
+      reader.readAsDataURL(event.target.files[0])
+      reader.onload = (event: any) => {
+        if(image_exts.includes(ext)) {
+          this.pic_url = event.target.result
+        }
+      }
+    }
+  }
+
   onSubmit() {
     console.log(this.companyForm.value)
     this.companyForm.value.establishment_date = new Date(this.companyForm.value.establishment_date).getTime()
+    if(this.pic !== "") {
+      this.companyForm.value.pic_url = this.pic.split('.')[0] + '_' + new Date().getTime() + '_' + '.' + this.pic.split('.')[this.pic.split('.').length-1]
+    }
     this.companyService.editCompanyProfile(this.posted_by_id, this.companyForm.value).subscribe(
       (res) => {
-        console.log(res)
         const company = this.companyForm.value
-        company.email = this.email
-        company.posted_by_id = this.posted_by_id
-        this.editCompanyService.sendCompany(this.companyForm.value)
-        alert("Company Profile Updated!")
-        this.Location.back()
+        /* Picture Upload */
+        console.error(this.pic)
+        if(this.pic !== "") {
+          console.error(res)
+          company.pic_url = res.success.url.split('?')[0]
+          const contenttype = 'image/' + this.pic.split('.')[this.pic.split('.').length-1]
+          const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
+          this.fileService.uploadToAWSS3(res.success.url,contenttype, this.file).subscribe(
+            () => {
+              modalRef.close()
+              console.log("yay")
+              company.email = this.email
+              company.posted_by_id = this.posted_by_id
+              company.edited = true
+              this.editCompanyService.sendCompany(company).subscribe(
+                () => this.Location.back(),
+                (err) => console.error(err)
+              )
+            },
+            (err) => console.error(err)
+          )
+        }
+        else {
+          company.pic_url = this.tmp_url
+          company.email = this.email
+          company.posted_by_id = this.posted_by_id
+          company.edited = true
+          this.editCompanyService.sendCompany(company)
+          this.Location.back()
+        }
+        /* END */
+        
       },
       (err) => {
         console.error(err)
@@ -124,6 +224,9 @@ export class EditCompanyComponent implements OnInit {
   }
 
   goBack() {
-    this.Location.back()
+    this.editCompanyService.sendCompany(this.company).subscribe(
+      () => this.Location.back(),
+      (err) => console.error(err)
+    )
   }
 }

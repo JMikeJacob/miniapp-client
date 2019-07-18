@@ -16,6 +16,7 @@ export class JobBoardComponent implements OnInit {
   // @Input() job:Job
   // @Output() job_ad: EventEmitter<Job> = new EventEmitter()
   logged_in: boolean
+  loading: boolean
   jobs: Job[]
   count: Observable<any>
   page: number
@@ -28,7 +29,7 @@ export class JobBoardComponent implements OnInit {
             ) { }
 
   ngOnInit() {
-    // this.getJobCount()
+    this.loading = true
     this.jobs = []
     this.logged_in = false
     // this.count = NaN
@@ -47,17 +48,17 @@ export class JobBoardComponent implements OnInit {
     })
   }
 
-  getAllJobs() {
-    this.jobService.getAllJobs().subscribe(
-      (res) => {
-        console.log(res.data)
-        this.jobs = res.data
-      },
-      (err) => {
-        console.error(err)
-      }
-    )
-  }
+  // getAllJobs() {
+  //   this.jobService.getAllJobs().subscribe(
+  //     (res) => {
+  //       console.log(res.data)
+  //       this.jobs = res.data
+  //     },
+  //     (err) => {
+  //       console.error(err)
+  //     }
+  //   )
+  // }
 
   getJobsByPage(page:number) {
     // const start = 10 * (this.page - 1)
@@ -68,6 +69,7 @@ export class JobBoardComponent implements OnInit {
         if(res.data.jobs) {
           this.jobs = res.data.jobs
         }
+        this.loading = false
       },
       (err) => {
         console.error(err)

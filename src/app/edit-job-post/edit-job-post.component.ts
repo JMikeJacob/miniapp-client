@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core'
+import { Component, OnInit, ViewChild } from '@angular/core'
 import { Observable } from 'rxjs'
 import { map, tap } from 'rxjs/operators'
 import { Location, DatePipe } from '@angular/common'
@@ -10,6 +10,8 @@ import { dateValidator } from '../shared/date-validator.directive'
 import { DuplicateValidatorDirective } from '../shared/duplicate-validator.directive'
 import { OptionsService } from '../options.service'
 import { EditJobPostService } from '../edit-job-post.service'
+import { QuillEditorComponent } from 'ngx-quill'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
 //testing
 import { CookieService } from 'ngx-cookie-service'
@@ -51,8 +53,15 @@ export class EditJobPostComponent implements OnInit {
   //testing
   id: number
 
+  @ViewChild('descriptionQuill', {
+    static: true
+  }) descriptionQuill: QuillEditorComponent
+
+  @ViewChild('qualificationsQuill', {
+    static: true
+  }) qualificationsQuill: QuillEditorComponent
+
   constructor(public jobService: JobService,
-              private router: Router,
               private route: ActivatedRoute,
               private location: Location,
               private duplicateValidatorDirective: DuplicateValidatorDirective,
@@ -127,6 +136,26 @@ export class EditJobPostComponent implements OnInit {
       this.id = res.id
       this.getJobPost()
     })
+
+    this.jobForm.controls.description.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe()
+
+    this.descriptionQuill.onContentChanged.pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      ).subscribe()
+
+    this.jobForm.controls.qualifications.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe()
+
+    this.qualificationsQuill.onContentChanged.pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      ).subscribe()
   }
 
 
@@ -183,29 +212,30 @@ export class EditJobPostComponent implements OnInit {
   // }
 
   getJobPost() {
-    this.job = this.editJobPostService.loadJob("edit", this.id).subscribe(
+    this.editJobPostService.loadJob("edit", this.id).subscribe(
       (res) => {
         console.error(res)
-        this.editJobPostService.sendJob(res.data)
         const dp = new DatePipe(navigator.language)
         this.job = res.data
         this.jobForm.patchValue({
-          job_name: res.data.job_name,
-          type: res.data.type,
-          level: res.data.level,
-          job_location: res.data.job_location,
-          description:res.data.description,
-          qualifications: res.data.qualifications,
-          date_deadline: dp.transform(new Date(res.data.date_deadline), 'yyyy-MM-dd'),
-          is_open: res.data.is_open
-        })
+        job_name: res.data.job_name,
+        type: res.data.type,
+        level: res.data.level,
+        job_location: res.data.job_location,
+        description:res.data.description,
+        qualifications: res.data.qualifications,
+        date_deadline: dp.transform(new Date(+res.data.date_deadline), 'yyyy-MM-dd'),
+        is_open: res.data.is_open
+      })
+      if(res.data.tags) {
         this.setTags(res.data.tags)
-      },
-      (err) => {
-        console.error(err)
-        // console.log("yo")
       }
-    )
+      this.editJobPostService.delJob()
+    },
+    (err) => {
+      console.error(err)
+      // console.log("yo")
+    })
   }
 
   onSubmit() {
@@ -232,6 +262,7 @@ export class EditJobPostComponent implements OnInit {
     console.log(this.job_post)
     this.jobService.editJobPost(this.id, this.job_post).subscribe(
       (res) => {
+        this.job_post.edited = true
         this.editJobPostService.sendJob(this.job_post)
         console.log(res)
         alert("Job Post Updated!")
@@ -244,6 +275,9 @@ export class EditJobPostComponent implements OnInit {
   }
 
   goBack() {
-    this.location.back()
+    this.editJobPostService.sendJob(this.job).subscribe(
+      () => this.location.back(),
+      (err) => console.error(err)
+    )
   }
 }

@@ -7,7 +7,8 @@ import { MatFormFieldModule,
         MatPaginatorModule,
         MatSlideToggleModule,
         MatButtonModule,
-        MatSlideToggle
+        MatSlideToggle,
+        MatProgressSpinnerModule
          } from '@angular/material'
 
 @NgModule({
@@ -20,7 +21,8 @@ import { MatFormFieldModule,
     MatNativeDateModule,
     MatPaginatorModule,
     MatButtonModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     MatFormFieldModule,
@@ -30,7 +32,8 @@ import { MatFormFieldModule,
     MatNativeDateModule,
     MatPaginatorModule,
     MatButtonModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatProgressSpinnerModule
   ]
 })
 export class CustomMaterialModule { }

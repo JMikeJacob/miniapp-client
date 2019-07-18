@@ -16,6 +16,8 @@ import { EditJobPostService } from '../edit-job-post.service'
 export class EmployerJobPostComponent implements OnInit {
   @Input() job: Job
   no_job: boolean
+  edited: boolean
+  loading: boolean
   skills: string[]
   fields: string[]
 
@@ -31,6 +33,8 @@ export class EmployerJobPostComponent implements OnInit {
   ngOnInit() {
     this.skills = []
     this.fields = []
+    this.edited = false
+    this.loading = true
     this.no_job = true
     this.getJobPost()
   }
@@ -66,12 +70,20 @@ export class EmployerJobPostComponent implements OnInit {
         this.editJobPostService.delJob()
         this.no_job = false
         this.job = res.data
-        for(let i = 0; i < this.job.tags.length; i++) {
-          if(this.job.tags[i].tag_type === "skill") {
-            this.skills.push(this.job.tags[i].tag)
+        if(res.data.tags) {
+          for(let i = 0; i < res.data.tags.length; i++) {
+            if(this.job.tags[i].tag_type === "skill") {
+              this.skills.push(res.data.tags[i].tag)
+            }
+            else if(res.data.tags[i].tag_type === "field") {
+              this.fields.push(res.data.tags[i].tag)
+            }
           }
-          else if(this.job.tags[i].tag_type === "field") {
-            this.fields.push(this.job.tags[i].tag)
+        }
+        this.loading = false
+        if(res.data.edited) {
+          if(res.data.edited === true) {
+            this.edited = true
           }
         }
       },
@@ -79,6 +91,7 @@ export class EmployerJobPostComponent implements OnInit {
         console.error(err)
         // console.log("yo")
         this.no_job = true
+        this.loading = false
       }
     )
   }

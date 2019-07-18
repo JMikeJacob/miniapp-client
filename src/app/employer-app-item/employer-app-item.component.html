@@ -3,7 +3,7 @@
         <div class="col-sm-4 my-auto">
                 <p><a routerLink="../../seekers/{{app.user_id}}">{{app.last_name}}, {{app.first_name}}</a></p>
                 <p><a routerLink="../../jobs/post/{{app.job_id}}">{{app.job_name}}</a></p>
-                <p>Applied on {{app.date_posted | date}}</p>
+                <p>Applied on {{+app.date_posted | date}}</p>
         </div>
         <div class="col-sm-4 text-center my-auto" style="margin-top:2em;">
                 <div *ngIf="!post_closed">

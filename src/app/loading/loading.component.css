@@ -1,0 +1,9 @@
+.modal-content {
+display: inline-block;
+text-align: center;
+vertical-align: middle;
+}
+
+mat-spinner {
+    margin: 0 auto;
+}

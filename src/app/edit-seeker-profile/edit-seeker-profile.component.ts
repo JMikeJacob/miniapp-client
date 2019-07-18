@@ -2,43 +2,34 @@ import { Component, OnInit } from '@angular/core'
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms'
 import { Location, DatePipe } from '@angular/common'
 import { Router } from '@angular/router'
+import { forkJoin } from 'rxjs'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+
 import { EstablishmentValidatorDirective } from '../shared/establishment-validator.directive'
 import { DuplicateValidatorDirective } from '../shared/duplicate-validator.directive'
+import { contactValidator } from '../shared/contact-validator.directive'
 
+import { OptionsService } from '../options.service'
+import { FileService } from '../file.service'
 import { EditSeekerProfileService } from '../edit-seeker-profile.service'
 import { SeekerService } from '../seeker.service'
 import { CookieService } from 'ngx-cookie-service'
 
 import { Seeker } from '../seeker'
-// import { Tag } from '../tag'
-import { contactValidator } from '../shared/contact-validator.directive'
-import { dateValidator } from '../shared/date-validator.directive'
-import { OptionsService } from '../options.service';
 
-const level_options = [
-  'Internship / OJT',
-  'Fresh Grad / Entry Level',
-  'Associate / Supervisor',
-  'Mid-Senior Level / Manager',
-  'Director / Executive'
+import { LoadingComponent } from '../loading/loading.component'
+
+const image_exts = [
+  "jpeg",
+  "jpg",
+  "png"
 ]
 
-const genders = [
-  'Male',
-  'Female',
-  'Other'
+const resume_exts = [
+  "pdf",
+  "docx",
+  "doc"
 ]
-
-const educations = [
-  'Elementary',
-  'High School',
-  'Undergraduate',
-  'Vocational',
-  'Masteral',
-  'Doctorate',
-  'Self-taught'
-]
-
 @Component({
   selector: 'app-edit-seeker-profile',
   templateUrl: './edit-seeker-profile.component.html',
@@ -53,6 +44,14 @@ export class EditSeekerProfileComponent implements OnInit {
   field_options: string[]
   education_options: string[]
   gender_options: string[]
+  pic_url: string
+
+  //temp
+  pic: string
+  file: any
+  resume: string
+  old_resume: string
+  resume_file: string
 
   profileForm: FormGroup
   skills: FormArray
@@ -63,6 +62,8 @@ export class EditSeekerProfileComponent implements OnInit {
   education: FormControl
   level: FormControl
   salary_per_month: FormControl
+  image: FormControl
+  resumeControl: FormControl
   tmpSeeker: Seeker
 
   constructor(private location: Location,
@@ -72,9 +73,14 @@ export class EditSeekerProfileComponent implements OnInit {
               private cookieService: CookieService,
               private optionService: OptionsService,
               private editSeekerProfileService: EditSeekerProfileService,
-              private router: Router) { }
+              private fileService: FileService,
+              public modalService: NgbModal) { }
 
   ngOnInit() {
+    this.pic = ""
+    this.pic_url = "none"
+    this.resume = "No uploaded resume"
+    this.old_resume = "No uploaded resume"
     this.seeker = new Seeker()
     this.optionService.loadData().subscribe(
       (res) => {
@@ -98,6 +104,12 @@ export class EditSeekerProfileComponent implements OnInit {
     ])
     this.education = new FormControl('')
     this.level = new FormControl('')
+    this.image = new FormControl('', [
+      this.duplicateValidatorDirective.fileValidator(image_exts)
+    ])
+    this.resumeControl = new FormControl('', [
+      this.duplicateValidatorDirective.fileValidator(resume_exts)
+    ])
     this.salary_per_month = new FormControl(0)
     this.skills = new FormArray([], [
       this.duplicateValidatorDirective.duplicateValidator()
@@ -113,7 +125,9 @@ export class EditSeekerProfileComponent implements OnInit {
       'level': this.level,
       'salary_per_month': this.salary_per_month,
       'skills': this.skills,
-      'fields': this.fields
+      'fields': this.fields,
+      'image': this.image,
+      'resumeControl': this.resumeControl
     })
     this.getSeekerProfile(this.id)
   }
@@ -130,50 +144,6 @@ export class EditSeekerProfileComponent implements OnInit {
     }
   }
 
-  // getSeekerProfile(id:number) {
-  //   this.seekerService.getSeekerProfile(id).subscribe(
-  //     (res) => {
-  //       console.log(res)
-  //       const dp = new DatePipe(navigator.language)
-  //       this.seeker = res.data
-  //       this.profileForm.patchValue({
-  //         'contact_no': res.data.contact_no,
-  //         'gender': res.data.gender,
-  //         'birthdate': dp.transform(new Date(res.data.birthdate), 'yyyy-MM-dd'),
-  //         'education': res.data.education,
-  //         'level': res.data.level,
-  //         'salary_per_month': res.data.salary_per_month
-  //       })
-  //       this.setTags(res.data.tags)
-  //     },
-  //     (err) => {
-  //       console.error(err)
-  //     }
-  //   )
-  // }
-
-  // getSeekerProfile(id:number) {
-  //   this.seekerService.getSeekerProfile(id).subscribe(
-  //     (res) => {
-  //       console.log(res)
-  //       const dp = new DatePipe(navigator.language)
-  //       this.seeker = res.data
-  //       this.profileForm.patchValue({
-  //         'contact_no': res.data.contact_no,
-  //         'gender': res.data.gender,
-  //         'birthdate': dp.transform(new Date(res.data.birthdate), 'yyyy-MM-dd'),
-  //         'education': res.data.education,
-  //         'level': res.data.level,
-  //         'salary_per_month': res.data.salary_per_month
-  //       })
-  //       this.setTags(res.data.tags)
-  //     },
-  //     (err) => {
-  //       console.error(err)
-  //     }
-  //   )
-  // }
-
   getSeekerProfile(id:number) {
     this.editSeekerProfileService.loadProfile("edit", id).subscribe(
       (res) => {
@@ -181,15 +151,36 @@ export class EditSeekerProfileComponent implements OnInit {
         const dp = new DatePipe(navigator.language)
         this.seeker = res.data
         this.tmpSeeker = res.data
+        const estdate = +res.data.birthdate || null
         this.profileForm.patchValue({
           'contact_no': res.data.contact_no,
           'gender': res.data.gender,
-          'birthdate': dp.transform(new Date(res.data.birthdate), 'yyyy-MM-dd'),
+          'birthdate': dp.transform(new Date(estdate), 'yyyy-MM-dd'),
           'education': res.data.education,
           'level': res.data.level,
-          'salary_per_month': res.data.salary_per_month
+          'salary_per_month': +res.data.salary_per_month
         })
-        this.setTags(res.data.tags)
+        if(res.data.tags) {
+          this.setTags(res.data.tags)
+        }
+        if(res.data.pic_url) {
+          if(res.data.pic_url === "") {
+            this.pic_url = '../../assets/img/placeholder.png'
+          }
+          else {
+            this.pic_url = res.data.pic_url
+          }
+        }
+        else {
+          this.pic_url = '../../assets/img/placeholder.png'
+        }
+        if(res.data.resume_url) {
+          if(res.data.resume_url !== "") {
+            this.old_resume = decodeURI(res.data.resume_url.split('/')[res.data.resume_url.split('/').length-1])
+            this.tmpSeeker.resume_url = res.data.resume_url
+          }
+        }
+        this.editSeekerProfileService.delProfile()
       },
       (err) => {
         console.error(err)
@@ -214,7 +205,47 @@ export class EditSeekerProfileComponent implements OnInit {
   }
 
   goBack() {
-    this.location.back()
+    this.editSeekerProfileService.sendProfile(this.seeker).subscribe(
+      () =>  this.location.back(),
+      (err) => console.error(err)
+    )
+  }
+
+  onFileChange(event) {
+    if (event.target.files && event.target.files[0]) {
+      var reader = new FileReader()
+
+      const [file] = event.target.files
+      const ext = file.name.split('.')[file.name.split('.').length-1]
+      if(image_exts.includes(ext)) {
+        this.file = file
+        this.pic = file.name
+      }
+      reader.readAsDataURL(event.target.files[0])
+      reader.onload = (event: any) => {
+        if(image_exts.includes(ext)) {
+          this.pic_url = event.target.result
+        }
+      }
+    }
+  }
+
+  onResumeChange(event) {
+    if (event.target.files && event.target.files[0]) {
+      const [file] = event.target.files
+      console.log(file)
+
+      const ext = file.name.split('.')[file.name.split('.').length-1]
+      if(resume_exts.includes(ext)) {
+        this.resume_file = file
+        this.resume = file.name
+      }
+      else {
+        this.resume = "No uploaded resume"
+      }
+
+      console.log(this.resume)
+    }
   }
 
   onSubmit() {
@@ -231,24 +262,113 @@ export class EditSeekerProfileComponent implements OnInit {
     delete this.seeker.skills
     delete this.seeker.fields
     this.seeker.birthdate = new Date(this.seeker.birthdate).getTime()
+
+    if(this.pic !== "") {
+      this.seeker.pic_url = this.pic.split('.')[0] + '_' + new Date().getTime() + '_' + '.' + this.pic.split('.')[this.pic.split('.').length-1]
+    }
+    if(this.resume !== "No uploaded resume") {
+      this.seeker.resume_url = this.resume.split('.')[0] + '_' + new Date().getTime() + '_' + '.' + this.resume.split('.')[this.resume.split('.').length-1]
+    }
     // this.job_post.description = this.job_post.description.replace("\n", "<br>")
 
     console.log(this.seeker)
     this.seekerService.editSeekerProfile(this.id, this.seeker).subscribe(
       (res) => {
-        console.log(res)
-        this.seeker.user_id = this.id
-        this.seeker.last_name = this.tmpSeeker.last_name
-        this.seeker.first_name = this.tmpSeeker.first_name
-        this.seeker.email = this.tmpSeeker.email
-        this.editSeekerProfileService.sendProfile(this.seeker)
-        alert("Seeker Profile Updated!")
-        this.location.back()
+        console.error(res)
+        const hasPic = (this.pic !== "" )
+        const hasResume = (this.resume !== "No uploaded resume")
+        if(hasPic && !hasResume) {
+          this.uploadPicOnly(res)
+        }
+        else if(!hasPic && hasResume) {
+          this.uploadResumeOnly(res)
+        }
+        else if(hasPic && hasResume) {
+          this.uploadPicAndResume(res)
+        }
+        else {
+          this.seeker.resume_url = this.tmpSeeker.resume_url
+          this.seeker.pic_url = this.tmpSeeker.pic_url
+          this.goBackDefaults()
+        }
       },
       (err) => {
         console.error(err)
       }
     )
   }
-  
+
+  uploadPicOnly(res) {
+    this.seeker.pic_url = res.success.url.split('?')[0]
+    const contenttype = 'image/' + this.pic.split('.')[this.pic.split('.').length-1]
+    const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
+    this.fileService.uploadToAWSS3(res.success.url,contenttype, this.file).subscribe(
+      () => {
+        modalRef.close()
+        this.seeker.resume_url = this.tmpSeeker.resume_url
+        this.goBackDefaults()
+      },
+      (err) => console.error(err)
+    )
+  }
+
+  uploadResumeOnly(res) {
+    this.seeker.resume_url = res.success.urlResume.split('?')[0]
+    let contenttypeResume = ""
+    let ext = this.resume.split('.')[this.resume.split('.').length-1]
+    if(ext === "docx" || ext === "doc") {
+      contenttypeResume = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    }
+    else if(ext === "pdf") {
+      contenttypeResume = "application/pdf"
+    }
+    const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
+    this.fileService.uploadToAWSS3(res.success.urlResume,contenttypeResume, this.resume_file).subscribe(
+      () => {
+        modalRef.close()
+        this.seeker.pic_url = this.tmpSeeker.pic_url
+        this.goBackDefaults()
+      },
+      (err) => console.error(err)
+    )
+  }
+
+  uploadPicAndResume(res) {
+    /* IMAGE */
+    this.seeker.pic_url = res.success.url.split('?')[0]
+    const contenttypeImage = 'image/' + this.pic.split('.')[this.pic.split('.').length-1]
+    this.seeker.resume_url = res.success.urlResume.split('?')[0]
+    /* IMAGE END */
+    /* RESUME */
+    let contenttypeResume = ""
+    let ext = this.resume.split('.')[this.resume.split('.').length-1]
+    if(ext === "docx" || ext === "doc") {
+      contenttypeResume = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    }
+    else if(ext === "pdf") {
+      contenttypeResume = "application/pdf"
+    }
+    /* RESUME END */
+    const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
+    forkJoin(this.fileService.uploadToAWSS3(res.success.url, contenttypeImage, this.file), //upload image
+             this.fileService.uploadToAWSS3(res.success.urlResume,contenttypeResume, this.resume_file) //upload resume
+             ).subscribe(
+              () => {
+                modalRef.close()
+                this.goBackDefaults()
+              },
+              (err) => console.error(err)
+             )
+  }
+
+  goBackDefaults() {
+    console.log("yay")
+    this.seeker.user_id = this.id
+    this.seeker.last_name = this.tmpSeeker.last_name
+    this.seeker.first_name = this.tmpSeeker.first_name
+    this.seeker.email = this.tmpSeeker.email
+    this.seeker.edited = true
+    this.editSeekerProfileService.sendProfile(this.seeker)
+    this.location.back()
+  }
 }

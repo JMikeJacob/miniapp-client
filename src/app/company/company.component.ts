@@ -15,7 +15,10 @@ import { EditCompanyService } from '../edit-company.service'
 })
 export class CompanyComponent implements OnInit {
   @Input() company: Company
+  pic_url: string
+  loading: boolean
   no_company: boolean
+  edited: boolean
   id: number
   constructor(
     private jobService: JobService,
@@ -28,6 +31,8 @@ export class CompanyComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.edited = false
+    this.loading = true
     this.no_company = true
     this.id = +this.cookieService.get('posted_by_id')
     this.getCompanyProfile(this.id)
@@ -57,17 +62,36 @@ export class CompanyComponent implements OnInit {
       (res) => {
         console.log(res)
         this.editCompanyService.delCompany()
-        this.no_company = false
         this.company = res.success.data
 
         console.log(this.company)
         if(!this.company.website) this.company.website="URL not provided."
         if(!this.company.location) this.company.location="Location not provided."
         if(!this.company.description) this.company.description="Description not provided."
+        this.loading = false
+        this.no_company = false
+        if(res.success.data.pic_url) {
+          if(res.success.data.pic_url === "") {
+            this.pic_url = '../../assets/img/placeholder.png'
+          }
+          else {
+            this.pic_url = res.success.data.pic_url
+          }
+        }
+        else {
+          this.pic_url = '../../assets/img/placeholder.png'
+        }
+
+        if(res.success.data.edited) {
+          if(res.success.data.edited === true) {
+            this.edited = true
+          }
+        } 
       },
       (err) => {
         console.error(err)
         // console.log("yo")
+        this.loading = false
         this.no_company = true
       }
     )

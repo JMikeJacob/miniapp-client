@@ -14,6 +14,8 @@ export class ProfileComponent implements OnInit {
 
   seeker:Seeker
   id: number
+  resume_url: string
+  pic_url: string
   skills: string[]
   fields: string[]
 
@@ -22,6 +24,8 @@ export class ProfileComponent implements OnInit {
               private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.pic_url = '../../assets/img/placeholder.png'
+    this.resume_url = "none"
     this.skills = []
     this.fields = []
     this.seeker = new Seeker()
@@ -38,12 +42,24 @@ export class ProfileComponent implements OnInit {
       (res) => {
         console.log(res)
         this.seeker = res.data
-        for(let i = 0; i < this.seeker.tags.length; i++) {
-          if(this.seeker.tags[i].tag_type === "skill") {
-            this.skills.push(this.seeker.tags[i].tag)
+        if(res.data.tags) {
+          for(let i = 0; i < res.data.tags.length; i++) {
+            if(res.data.tags[i].tag_type === "skill") {
+              this.skills.push(res.data.tags[i].tag)
+            }
+            else if(res.data.tags[i].tag_type === "field") {
+              this.fields.push(res.data.tags[i].tag)
+            }
           }
-          else if(this.seeker.tags[i].tag_type === "field") {
-            this.fields.push(this.seeker.tags[i].tag)
+        }
+        if(res.data.pic_url) {
+          if(res.data.pic_url !== "") {
+            this.pic_url = res.data.pic_url
+          }
+        }
+        if(res.data.resume_url) {
+          if(res.data.resume_url !== "") {
+            this.resume_url = res.data.resume_url
           }
         }
       },
@@ -51,5 +67,9 @@ export class ProfileComponent implements OnInit {
         console.error(err)
       }
     )
+  }
+
+  getResume() {
+    window.open(this.resume_url, "_blank")
   }
 }
