@@ -20,6 +20,7 @@ export class Seeker {
     skills?: Tag[]
     fields?: Tag[]
     pic_url?: string
+    pic_url_old?: string
     resume_url?: string
     edited?: boolean
 

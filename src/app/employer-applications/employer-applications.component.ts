@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
-import { Observable } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 import { ActivatedRoute, Router } from '@angular/router'
 import { PageEvent } from '@angular/material/paginator'
 
@@ -7,6 +7,8 @@ import { CookieService } from 'ngx-cookie-service'
 
 import { Job } from '../job'
 import { JobService } from '../job.service'
+import { NotificationService } from '../notification.service'
+
 @Component({
   selector: 'app-employer-applications',
   templateUrl: './employer-applications.component.html',
@@ -16,19 +18,28 @@ export class EmployerApplicationsComponent implements OnInit {
   loading: boolean
   apps: any[]
   count: Observable<any>
+  app_count: number
   page: number
   id: number
   pageEvent = PageEvent
+  set: boolean
+  notifs: any[]
+  _notifSub: Subscription
+  _removerSub: Subscription
 
   constructor(public jobService: JobService,
               private route: ActivatedRoute,
               private router: Router,
-              public cookieService: CookieService
+              public cookieService: CookieService,
+              private notificationService: NotificationService
             ) { }
 
   ngOnInit() {
     // this.count = NaN
     // this.getPageNumber()
+    this.notifs = []
+    this.app_count = 0
+    this.set = false
     this.loading = true
     this.apps = []
     this.route.params.subscribe((res) => {
@@ -42,10 +53,30 @@ export class EmployerApplicationsComponent implements OnInit {
         this.page = 1
       }
       this.getAppsByPage(this.id, this.page)
+      this.set = true
     })
+    this.notifs = this.notificationService.getNotifications()
+    console.log(this.notifs)
+    this._notifSub = this.notificationService.notification.subscribe(
+      notif => {
+        this.notifs.push(notif)
+        this.app_count = notif.count
+      }
+    )
+    this._removerSub = this.notificationService.editNotification$.subscribe(
+      res => {
+        if(res === "remove") {
+          this.notifs = []
+          this.app_count = 0
+        }
+        else if(res === "refresh") {
+          this.getAppsByPage(this.id, this.page, true)
+        }
+      }
+    )
   }
 
-  getAppsByPage(id:number, page:number) {
+  getAppsByPage(id:number, page:number, from?:boolean) {
     // const start = 10 * (this.page - 1)
     this.jobService.getApplicationsEmployer(id, page).subscribe(
       (res) => {
@@ -53,6 +84,11 @@ export class EmployerApplicationsComponent implements OnInit {
         this.count = res.data.count
         this.apps = res.data.apps
         this.loading = false
+        if(from) {
+          this.notifs = []
+          this.app_count = 0
+          this.notificationService.editNotification("remove")
+        }
       },
       (err) => {
         console.error(err)
@@ -62,5 +98,19 @@ export class EmployerApplicationsComponent implements OnInit {
 
   loadPage(event?: PageEvent) {
     this.router.navigate([`../apps/`, event.pageIndex + 1])
+  }
+
+  removeNotifs() {
+    this.notifs = []
+    this.notificationService.editNotification("remove")
+  }
+
+  ngOnDestroy() {
+    if(this._notifSub) {
+      this._notifSub.unsubscribe()
+    }
+    if(this._removerSub) {
+      this._removerSub.unsubscribe()
+    }
   }
 }

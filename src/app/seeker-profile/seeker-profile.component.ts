@@ -92,4 +92,13 @@ export class SeekerProfileComponent implements OnInit {
       (err) => console.error(err)
     )
   }
+
+  updateUrl(event) {
+    if(this.seeker.pic_url_old !== "" && this.seeker.pic_url_old !== event.srcElement.currentSrc) {
+      this.pic_url = this.seeker.pic_url_old
+    }
+    else {
+      this.pic_url = '../../assets/img/placeholder.png'
+    }
+  }
 }

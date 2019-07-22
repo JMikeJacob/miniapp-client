@@ -7,6 +7,9 @@ import { CookieService } from 'ngx-cookie-service'
 
 import { Job } from '../job'
 import { JobService } from '../job.service'
+import { Subscription } from 'rxjs'
+import { Notification } from '../notification'
+import { NotificationService } from '../notification.service'
 
 @Component({
   selector: 'app-seeker-applications',
@@ -20,15 +23,23 @@ export class SeekerApplicationsComponent implements OnInit {
   hasApps: boolean
   page: number
   id: number
-  pageEvent = PageEvent
+  pageEvent = PageEvent  
+  accepts: Notification[]
+  _notifSub: Subscription
+  _removerSub: Subscription
+
+
+  private appPage = true
 
   constructor(public jobService: JobService,
               private route: ActivatedRoute,
               private router: Router,
-              public cookieService: CookieService
+              public cookieService: CookieService,
+              public notificationService: NotificationService
             ) { }
 
   ngOnInit() {
+    this.accepts = []
     // this.count = NaN
     // this.getPageNumber()
     this.loading = true
@@ -45,9 +56,26 @@ export class SeekerApplicationsComponent implements OnInit {
       }
       this.getAppsByPage(this.id, this.page)
     })
+    this._notifSub = this.notificationService.notification.subscribe(
+      (notif) => {
+        if(notif.type === "accept") {
+          this.accepts.push(notif)
+        }
+      }
+    )
+    this._removerSub = this.notificationService.editNotification$.subscribe(
+      (res) => {
+        if(res === "remove") {
+          this.accepts = []
+        }
+        else if(res === "refresh") {
+          this.getAppsByPage(this.id, this.page, true)
+        }
+      }
+    )
   }
 
-  getAppsByPage(id:number, page:number) {
+  getAppsByPage(id:number, page:number, from?:boolean) {
     // const start = 10 * (this.page - 1)
     this.jobService.getApplicationsSeeker(id, page).subscribe(
       (res) => {
@@ -58,6 +86,10 @@ export class SeekerApplicationsComponent implements OnInit {
           this.hasApps = true
         }
         this.loading = false
+        if(from) {
+          this.accepts = []
+          this.notificationService.editNotification("remove")
+        }
       },
       (err) => {
         console.error(err)
@@ -67,6 +99,20 @@ export class SeekerApplicationsComponent implements OnInit {
 
   loadPage(event?: PageEvent) {
     this.router.navigate([`../apps/`, event.pageIndex + 1])
+  }
+
+  removeNotifs() {
+    this.notificationService.editNotification("remove")
+    this.accepts = []
+  }
+
+  ngOnDestroy() {
+    if(this._notifSub) {
+      this._notifSub.unsubscribe()
+    }
+    if(this._removerSub) {
+      this._removerSub.unsubscribe()
+    }
   }
 
 }

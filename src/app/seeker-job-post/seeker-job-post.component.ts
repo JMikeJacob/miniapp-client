@@ -8,6 +8,8 @@ import { Job } from '../job'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { ChoiceModalComponent } from '../choice-modal/choice-modal.component'
 
+import { NotificationService } from '../notification.service'
+
 @Component({
   selector: 'app-seeker-job-post',
   templateUrl: './seeker-job-post.component.html',
@@ -30,6 +32,7 @@ export class SeekerJobPostComponent implements OnInit {
     private router: Router,
     private location: Location,
     public modalService: NgbModal,
+    private notificationService: NotificationService,
     private cookieService: CookieService //testing
   ) { }
 
@@ -109,6 +112,11 @@ export class SeekerJobPostComponent implements OnInit {
                 console.log(res)
                 this.app_id = res.app_id
                 this.applied = "yes"
+                this.notificationService.applyNotification({
+                  to: this.job.posted_by_id,
+                  from: this.user_id,
+                  message: `New App Alert: Jobseeker#${this.user_id} just applied for ${this.job.job_name}`
+                })
               },
               (err) => {
                 console.log(err)

@@ -1,5 +1,8 @@
-<nav class="navbar navbar-expand-sm navbar-dark static-top">
-    <a class="navbar-brand" routerLink="/employer" >Employer</a>
+<nav class="navbar navbar-expand-sm navbar-light">
+    <a class="navbar-brand" routerLink="/employer" >
+        <img src="../../assets/img/logo.png" />
+        <!-- Employer -->
+    </a>
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
             <a class="nav-link" routerLink="/employer/jobs/create">
@@ -12,8 +15,9 @@
             </a>
         </li>
         <li class="nav-item ">
-            <a class="nav-link" routerLink="/employer/apps/1">
+            <a class="nav-link" routerLink="/employer/apps/1" (click)="removeNotifs()">
                 View Applications
+                <span *ngIf="notifCount>0" class="badge">{{notifCount}}</span>
             </a>
         </li>
         <li class="nav-item">

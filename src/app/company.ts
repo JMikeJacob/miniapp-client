@@ -8,5 +8,6 @@ export class Company {
     email?: string
     contact_no? : string
     pic_url?: string
+    pic_url_old?: string
     edited?: boolean
 }

@@ -18,6 +18,7 @@ export class CompanyProfileComponent implements OnInit {
   loading: boolean
   no_company: boolean
   id: number
+  from:string
   constructor(
     private jobService: JobService,
     private route: ActivatedRoute,
@@ -34,6 +35,19 @@ export class CompanyProfileComponent implements OnInit {
       (res) => {
         this.id = res.id
         this.getCompanyProfile(res.id)
+      }
+    )
+    this.route.queryParamMap.subscribe(
+      (res:any) => {
+        if(res.params.from) {
+          this.from = res.params.from
+        }
+        else {
+          this.from = ""
+        }
+      },
+      (err) => {
+        this.from = ""
       }
     )
   }
@@ -75,5 +89,14 @@ export class CompanyProfileComponent implements OnInit {
 
   goBack() {
     this.location.back()
+  }
+
+  updateUrl(event) {
+    if(this.company.pic_url_old !== "" && this.company.pic_url_old !== event.srcElement.currentSrc) {
+      this.pic_url = this.company.pic_url_old
+    }
+    else {
+      this.pic_url = '../../assets/img/placeholder.png'
+    }
   }
 }

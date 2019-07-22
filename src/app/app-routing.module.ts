@@ -38,7 +38,7 @@ const routes: Routes = [
     { path: '', pathMatch: 'full', redirectTo: 'index' },
     { path: 'index', component: IndexComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'signup', component: SignupSplitComponent },
+    // { path: 'signup', component: SignupSplitComponent },
     { path: 'register', children: [
       { path: '', redirectTo: 'seeker', pathMatch:'full' },
       { path: 'seeker', component: RegisterComponent },

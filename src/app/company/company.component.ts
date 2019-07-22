@@ -102,6 +102,15 @@ export class CompanyComponent implements OnInit {
     this.router.navigate([`../employer/company/edit`])
   }
 
+  updateUrl(event) {
+    if(this.company.pic_url_old !== "" && this.company.pic_url_old !== event.srcElement.currentSrc) {
+      this.pic_url = this.company.pic_url_old
+    }
+    else {
+      this.pic_url = '../../assets/img/placeholder.png'
+    }
+  }
+
   goBack() {
     this.location.back()
   }

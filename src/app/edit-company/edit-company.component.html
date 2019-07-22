@@ -23,7 +23,7 @@
                 <div class="row" style="margin-bottom:1em;">
                     <div class="col-sm-12">
                         <div *ngIf="pic_url !== 'none'">
-                            <img class="img img-responsive img-thumbnail" style="width:180px;height:180px;" [src]="pic_url" alt="profile picture" />
+                            <img class="img img-responsive img-thumbnail" style="width:180px;height:180px;" [src]="pic_url" (error)="updateUrl($event)" alt="profile picture" />
                         </div>
                         <mat-error *ngIf="image.errors?.invalidFormat">
                             File must be in .jpeg or .png format.

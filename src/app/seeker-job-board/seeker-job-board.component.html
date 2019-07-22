@@ -6,6 +6,20 @@
         <div *ngIf="jobs.length > 0">
             <div class="row">
                 <div class="col">
+                    <mat-form-field> 
+                        <mat-select [(value)]="sortValue" (selectionChange)="selected($event)" name="sort" disableOptionCentering>
+                            <mat-option value="Sort: Alphabetical A to Z">Alphabetical A to Z</mat-option>
+                            <mat-option value="Sort: Alphabetical Z to A">Alphabetical Z to A</mat-option>
+                            <mat-option value="Sort: Latest to Oldest">Latest to Oldest</mat-option>
+                            <mat-option value="Sort: Oldest to Latest">Oldest to Latest</mat-option>
+                            <mat-option value="Sort: Nearest Deadline">Nearest Deadline</mat-option>
+                            <mat-option value="Sort: Farthest Deadline">Farthest Deadline</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
                     <div class="list-group">
                         <ng-container *ngFor="let job of jobs">
                             <div class="list-group-item rounded-0">

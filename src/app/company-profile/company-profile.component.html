@@ -1,6 +1,9 @@
 <div class="container">
     <div class="page-header">
-        <button class="btn btn-info" (click)="goBack()">Return to Job Board</button>
+        <button class="btn btn-info" (click)="goBack()">
+            <span *ngIf="!from || from===''">Return to Job Board</span>
+            <span *ngIf="from==='post'">Return to Job Post</span>
+        </button>
     </div>
     <div *ngIf="!loading">
         <div *ngIf="no_company">
@@ -15,18 +18,15 @@
                 <div class="col-sm-4">
                     <div *ngIf="pic_url !== 'none'">
                         <div *ngIf="pic_url !== 'none'">
-                            <img img class="img img-responsive img-thumbnail" style="width:180px;height:180px;"  [src]="pic_url" alt="profile picture" />
+                            <img img class="img img-responsive img-thumbnail" (error)="updateUrl($event)" style="width:180px;height:180px;"  [src]="pic_url" alt="profile picture" />
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <p>{{company.name}}<br/>
-                    {{company.website}}<br/>
+                <div class="col-sm-8">
+                    <h4>{{company.name}}</h4>
+                    <p>{{company.website}}<br/>
                     {{company.location}}</p>
-                </div>
-                <div class="col-sm-4 float-sm-right text-sm-right">
-                    <p><span *ngIf="company.establishment_date">Established on {{company.establishment_date | date}}<br/></span>
-                    {{company.location}}</p>
+                    <p><span *ngIf="company.establishment_date">Established on {{company.establishment_date | date}}</span></p>
                 </div>
             </div>
             <div class="row border border-black" style="padding:1em;margin:1em;">

@@ -42,7 +42,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <p>{{job.company_name}}</p>
+                        <a routerLink="../../../company/{{job.posted_by_id}}" [queryParams]="{from:'post'}">{{job.company_name}}</a><br/>
                         <p>{{job.job_location}}</p>
                     </div>
                 </div>

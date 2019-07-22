@@ -20,6 +20,13 @@ export class FileService {
     )
   }
 
+  getSignedUrl(data:any): Observable<any>{
+    const httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})}
+    return this.http.post('http://localhost:3000/aws/url', data, httpOptions).pipe(
+      catchError(this.handleError<any>('getSignedUrl'))
+    )
+  }
+
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 

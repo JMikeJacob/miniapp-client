@@ -7,7 +7,6 @@ import { MatFormFieldModule,
         MatPaginatorModule,
         MatSlideToggleModule,
         MatButtonModule,
-        MatSlideToggle,
         MatProgressSpinnerModule
          } from '@angular/material'
 

@@ -72,4 +72,13 @@ export class ProfileComponent implements OnInit {
   getResume() {
     window.open(this.resume_url, "_blank")
   }
+
+  updateUrl(event) {
+    if(this.seeker.pic_url_old !== "" && this.seeker.pic_url_old !== event.srcElement.currentSrc) {
+      this.pic_url = this.seeker.pic_url_old
+    }
+    else {
+      this.pic_url = '../../assets/img/placeholder.png'
+    }
+  }
 }

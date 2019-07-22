@@ -16,6 +16,7 @@ export class OptionsService {
   options: any
   private serverUrl = 'http://localhost:3000'
   loadData(): Observable<any> {
+    
     if(this.options) {
       // console.error(this.options.data)
       return of(this.options)

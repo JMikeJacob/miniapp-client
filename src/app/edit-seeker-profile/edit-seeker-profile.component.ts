@@ -272,48 +272,49 @@ export class EditSeekerProfileComponent implements OnInit {
     // this.job_post.description = this.job_post.description.replace("\n", "<br>")
 
     console.log(this.seeker)
-    this.seekerService.editSeekerProfile(this.id, this.seeker).subscribe(
-      (res) => {
-        console.error(res)
-        const hasPic = (this.pic !== "" )
-        const hasResume = (this.resume !== "No uploaded resume")
-        if(hasPic && !hasResume) {
-          this.uploadPicOnly(res)
+    const hasPic = (this.pic !== "" )
+    const hasResume = (this.resume !== "No uploaded resume")
+    const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
+    if(hasPic || hasResume) {
+      this.fileService.getSignedUrl({pic_url: this.seeker.pic_url, resume_url:this.seeker.resume_url}).subscribe(
+        (res) => {
+          console.log(res)
+          if(hasPic && !hasResume) {
+            this.uploadPicOnly(res, modalRef)
+          }
+          else if(!hasPic && hasResume) {
+            this.uploadResumeOnly(res, modalRef)
+          }
+          else if(hasPic && hasResume) {
+            this.uploadPicAndResume(res, modalRef)
+          }
+        },
+        (err) => {
+          console.error(err)
         }
-        else if(!hasPic && hasResume) {
-          this.uploadResumeOnly(res)
-        }
-        else if(hasPic && hasResume) {
-          this.uploadPicAndResume(res)
-        }
-        else {
-          this.seeker.resume_url = this.tmpSeeker.resume_url
-          this.seeker.pic_url = this.tmpSeeker.pic_url
-          this.goBackDefaults()
-        }
-      },
-      (err) => {
-        console.error(err)
-      }
-    )
+      )
+    }
+    else {
+      this.seeker.resume_url = this.tmpSeeker.resume_url
+      this.seeker.pic_url = this.tmpSeeker.pic_url
+      this.goBackDefaults(modalRef)
+    }
   }
 
-  uploadPicOnly(res) {
-    this.seeker.pic_url = res.success.url.split('?')[0]
+  uploadPicOnly(res, modalRef) {
+    this.seeker.pic_url = res.data.pic_url.split('?')[0]
     const contenttype = 'image/' + this.pic.split('.')[this.pic.split('.').length-1]
-    const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
-    this.fileService.uploadToAWSS3(res.success.url,contenttype, this.file).subscribe(
+    this.fileService.uploadToAWSS3(res.data.pic_url,contenttype, this.file).subscribe(
       () => {
-        modalRef.close()
         this.seeker.resume_url = this.tmpSeeker.resume_url
-        this.goBackDefaults()
+        this.goBackDefaults(modalRef)
       },
       (err) => console.error(err)
     )
   }
 
-  uploadResumeOnly(res) {
-    this.seeker.resume_url = res.success.urlResume.split('?')[0]
+  uploadResumeOnly(res, modalRef) {
+    this.seeker.resume_url = res.data.resume_url.split('?')[0]
     let contenttypeResume = ""
     let ext = this.resume.split('.')[this.resume.split('.').length-1]
     if(ext === "docx" || ext === "doc") {
@@ -322,22 +323,20 @@ export class EditSeekerProfileComponent implements OnInit {
     else if(ext === "pdf") {
       contenttypeResume = "application/pdf"
     }
-    const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
-    this.fileService.uploadToAWSS3(res.success.urlResume,contenttypeResume, this.resume_file).subscribe(
+    this.fileService.uploadToAWSS3(res.data.resume_url,contenttypeResume, this.resume_file).subscribe(
       () => {
-        modalRef.close()
         this.seeker.pic_url = this.tmpSeeker.pic_url
-        this.goBackDefaults()
+        this.goBackDefaults(modalRef)
       },
       (err) => console.error(err)
     )
   }
 
-  uploadPicAndResume(res) {
+  uploadPicAndResume(res, modalRef) {
     /* IMAGE */
-    this.seeker.pic_url = res.success.url.split('?')[0]
+    this.seeker.pic_url = res.data.pic_url.split('?')[0]
     const contenttypeImage = 'image/' + this.pic.split('.')[this.pic.split('.').length-1]
-    this.seeker.resume_url = res.success.urlResume.split('?')[0]
+    this.seeker.resume_url = res.data.resume_url.split('?')[0]
     /* IMAGE END */
     /* RESUME */
     let contenttypeResume = ""
@@ -349,26 +348,40 @@ export class EditSeekerProfileComponent implements OnInit {
       contenttypeResume = "application/pdf"
     }
     /* RESUME END */
-    const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
-    forkJoin(this.fileService.uploadToAWSS3(res.success.url, contenttypeImage, this.file), //upload image
-             this.fileService.uploadToAWSS3(res.success.urlResume,contenttypeResume, this.resume_file) //upload resume
+    forkJoin(this.fileService.uploadToAWSS3(res.data.pic_url, contenttypeImage, this.file), //upload image
+             this.fileService.uploadToAWSS3(res.data.resume_url,contenttypeResume, this.resume_file) //upload resume
              ).subscribe(
               () => {
-                modalRef.close()
-                this.goBackDefaults()
+                this.goBackDefaults(modalRef)
               },
               (err) => console.error(err)
              )
   }
 
-  goBackDefaults() {
-    console.log("yay")
-    this.seeker.user_id = this.id
-    this.seeker.last_name = this.tmpSeeker.last_name
-    this.seeker.first_name = this.tmpSeeker.first_name
-    this.seeker.email = this.tmpSeeker.email
-    this.seeker.edited = true
-    this.editSeekerProfileService.sendProfile(this.seeker)
-    this.location.back()
+  goBackDefaults(modalRef) {
+    this.seekerService.editSeekerProfile(this.id, this.seeker).subscribe(
+      () => {
+        this.seeker.user_id = this.id
+        this.seeker.last_name = this.tmpSeeker.last_name
+        this.seeker.first_name = this.tmpSeeker.first_name
+        this.seeker.email = this.tmpSeeker.email
+        this.seeker.edited = true
+        this.editSeekerProfileService.sendProfile(this.seeker)
+        modalRef.close()
+        this.location.back()
+      },
+      (err) => {
+        console.error(err)
+      }
+    )
+  }
+
+  updateUrl(event) {
+    if(this.seeker.pic_url_old !== "" && this.seeker.pic_url_old !== event.srcElement.currentSrc) {
+      this.pic_url = this.seeker.pic_url_old
+    }
+    else {
+      this.pic_url = '../../assets/img/placeholder.png'
+    }
   }
 }

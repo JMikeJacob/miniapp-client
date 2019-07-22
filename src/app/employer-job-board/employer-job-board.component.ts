@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
-import { Observable, of } from 'rxjs'
+import { Subscription } from 'rxjs'
 import { ActivatedRoute, Router } from '@angular/router'
 import { PageEvent } from '@angular/material/paginator'
 
@@ -8,6 +8,7 @@ import { CookieService } from 'ngx-cookie-service'
 
 import { Job } from '../job'
 import { JobService } from '../job.service'
+import { OptionsService } from '../options.service'
 
 @Component({
   selector: 'app-employer-job-board',
@@ -23,6 +24,9 @@ export class EmployerJobBoardComponent implements OnInit {
   page: number
   routePage: number
   pageEvent = PageEvent
+  _querySub: Subscription
+  sortValue: string
+  sorts: any[]
 
   //testing
   id: number
@@ -30,7 +34,8 @@ export class EmployerJobBoardComponent implements OnInit {
   constructor(public jobService: JobService,
               private route: ActivatedRoute,
               private router: Router,
-              public cookieService: CookieService
+              public cookieService: CookieService,
+              private optionsService: OptionsService
             ) { }
 
   ngOnInit() {
@@ -41,6 +46,12 @@ export class EmployerJobBoardComponent implements OnInit {
     this.logged_in = false
     // this.count = NaN
     // this.getPageNumber()
+    this.sorts = []
+    this.optionsService.loadData().subscribe(
+      res => this.sorts = res.data.sorts,
+      err => console.error(err)
+    )
+    this.sortValue = "Sort: Latest to Oldest"
     this.route.params.subscribe((res) => {
       this.page = res.page
       if(isNaN(this.page)) {
@@ -51,6 +62,13 @@ export class EmployerJobBoardComponent implements OnInit {
         this.page = 1
       }
       this.getJobsByPageEmployer(this.page)
+      this._querySub = this.route.queryParamMap.subscribe(
+        (res:any) => {
+          console.log("change")
+          this.getJobsByPageEmployer(this.page, res.params.order, res.params.how)
+        },
+        err => console.error(err)
+      )
     })
   }
 
@@ -66,9 +84,9 @@ export class EmployerJobBoardComponent implements OnInit {
   //   )
   // }
 
-  getJobsByPageEmployer(page:number) {
+  getJobsByPageEmployer(page:number, order?: string, how?:string) {
     // const start = 10 * (this.page - 1)
-    this.jobService.getJobsPerPageEmployer(this.id,page).subscribe(
+    this.jobService.getJobsPerPageEmployer(this.id,page,null,order,how).subscribe(
       (res) => {
         console.log(res.data)
         this.count = res.data.count
@@ -83,6 +101,17 @@ export class EmployerJobBoardComponent implements OnInit {
 
   loadPage(event?: PageEvent) {
     this.router.navigate([`../employer/jobs/`, event.pageIndex + 1])
+  }
+
+  selected(event) {
+    console.log(event.source.value)
+    this.sortValue = event.source.value
+    const options = this.sorts[event.source.value]
+    this.router.navigate([`../employer/jobs/${this.page}`], {queryParams: {order:options.order, how:options.how}})
+  }
+
+  ngOnDestroy() {
+    this._querySub.unsubscribe()
   }
 
 }

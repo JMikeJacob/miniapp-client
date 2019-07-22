@@ -1,25 +1,32 @@
-<nav class="navbar navbar-expand-sm navbar-dark static-top">
-    <a class="navbar-brand" routerLink="../seeker/jobs/1" >JobSeeker</a>
+<nav class="navbar navbar-expand-sm navbar-light">
+    <a class="navbar-brand" routerLink="../seeker/jobs/1" >
+        <img src="../../assets/img/logo.png" />
+        <!-- Jobseeker -->
+    </a>
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
             <a class="nav-link" routerLink="../seeker/jobs/1">Job Board</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" routerLink="../seeker/apps/1">Applications</a>
+            <a class="nav-link" routerLink="../seeker/apps/1" (click)="removeNotifs()">Applications</a>
+            <span *ngIf="notifCount>0" class="badge">{{notifCount}}</span>
         </li>
         <li class="nav-item">
             <a class="nav-link" routerLink="../seeker/jobs/recommended/1">Recommendations</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" routerLink="../seeker/profile">Profile</a>
-        </li>
+        
     </ul>
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-            <a class="nav-link" routerLink="../seeker/account">Account</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="javascript:;" (click)="logout()">Log Out</a>
+    <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="javascript:;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{name}}
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a style="color:black;margin:auto" class="nav-link link" routerLink="../seeker/profile">Profile</a>
+                <a  style="color:black" class="nav-link link" routerLink="../seeker/account">Account</a>
+                <div class="dropdown-divider"></div>
+                <a  style="color:black" class="nav-link link" href="javascript:;" (click)="logout()">Log Out</a>
+            </div>
         </li>
     </ul>
 </nav>

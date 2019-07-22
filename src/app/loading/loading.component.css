@@ -2,6 +2,7 @@
 display: inline-block;
 text-align: center;
 vertical-align: middle;
+background-color: white;
 }
 
 mat-spinner {

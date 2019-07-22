@@ -7,6 +7,7 @@ import { Seeker } from '../seeker'
 import { SeekerService } from '../seeker.service'
 import { EmployerService } from '../employer.service'
 import { CookieService } from 'ngx-cookie-service'
+import { NotificationService } from '../notification.service'
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,8 @@ export class LoginComponent implements OnInit {
               private router: Router,
               public seekerService: SeekerService, 
               public employerService: EmployerService,
-              public cookieService: CookieService
+              public cookieService: CookieService,
+              private notificationService: NotificationService
             ) { }
 
   ngOnInit() {
@@ -77,10 +79,13 @@ export class LoginComponent implements OnInit {
         (data) => {
           console.log(data)
           this.invalid = false
+          this.notificationService.subscribeToNotifs('employer', data.user.user_id, data.user.app_notifications)
           this.cookieService.set('role', 'employer', null, '/')
           /* FOR TESTING PURPOSES ONLY */
           this.cookieService.set('posted_by_id', data.user.user_id, null, '/')
+          this.cookieService.set('name', data.user.first_name + " " + data.user.last_name, null, '/')
           this.cookieService.set('company', data.user.company_name, null, '/')
+          this.cookieService.set('app_count', data.user.app_notifications, null, '/')
           /* */
           // this.router.navigate(['/employer/dashboard'])
           this.router.navigate(['/employer/jobs'])
@@ -94,8 +99,10 @@ export class LoginComponent implements OnInit {
         (data) => {
           console.log(data)
           this.invalid = false
+          this.notificationService.subscribeToNotifs('seeker', data.user.user_id)
           this.cookieService.set('role', 'seeker', null, '/')
           this.cookieService.set('user_id', data.user.user_id, null, '/')
+          this.cookieService.set('name', data.user.first_name + " " + data.user.last_name, null, '/')
           this.router.navigate(['/seeker/jobs'])
       }, (err) => {
         console.log(err)

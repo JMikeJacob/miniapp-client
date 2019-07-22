@@ -176,51 +176,44 @@ export class EditCompanyComponent implements OnInit {
   }
 
   onSubmit() {
+    const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
     console.log(this.companyForm.value)
-    this.companyForm.value.establishment_date = new Date(this.companyForm.value.establishment_date).getTime()
+    this.companyForm.value.establishment_date = new Date(this.companyForm.value.establishment_date).getTime() 
     if(this.pic !== "") {
       this.companyForm.value.pic_url = this.pic.split('.')[0] + '_' + new Date().getTime() + '_' + '.' + this.pic.split('.')[this.pic.split('.').length-1]
+      this.fileService.getSignedUrl({pic_url: this.companyForm.value.pic_url}).subscribe(
+        (res) => {
+          const contenttype = 'image/' + this.pic.split('.')[this.pic.split('.').length-1]
+          this.fileService.uploadToAWSS3(res.data.pic_url,contenttype, this.file).subscribe(
+            () => this.editCompany(res.data.pic_url, modalRef),
+            (err) => console.error(err)
+          )    
+        },
+        (err) => {
+          console.error(err)
+        }
+      )
     }
+    else {
+      this.editCompany(this.tmp_url, modalRef)
+    }
+  }
+
+  editCompany(pic_url:string, modalRef) {
     this.companyService.editCompanyProfile(this.posted_by_id, this.companyForm.value).subscribe(
       (res) => {
         const company = this.companyForm.value
-        /* Picture Upload */
-        console.error(this.pic)
-        if(this.pic !== "") {
-          console.error(res)
-          company.pic_url = res.success.url.split('?')[0]
-          const contenttype = 'image/' + this.pic.split('.')[this.pic.split('.').length-1]
-          const modalRef = this.modalService.open(LoadingComponent,{ backdrop : 'static', keyboard : false })
-          this.fileService.uploadToAWSS3(res.success.url,contenttype, this.file).subscribe(
-            () => {
-              modalRef.close()
-              console.log("yay")
-              company.email = this.email
-              company.posted_by_id = this.posted_by_id
-              company.edited = true
-              this.editCompanyService.sendCompany(company).subscribe(
-                () => this.Location.back(),
-                (err) => console.error(err)
-              )
-            },
-            (err) => console.error(err)
-          )
-        }
-        else {
-          company.pic_url = this.tmp_url
-          company.email = this.email
-          company.posted_by_id = this.posted_by_id
-          company.edited = true
-          this.editCompanyService.sendCompany(company)
-          this.Location.back()
-        }
-        /* END */
-        
+        company.pic_url = pic_url
+        company.email = this.email
+        company.posted_by_id = this.posted_by_id
+        company.edited = true
+        this.editCompanyService.sendCompany(company)
+        modalRef.close()
+        this.Location.back()
       },
       (err) => {
         console.error(err)
-      }
-    )
+      })
   }
 
   goBack() {
@@ -228,5 +221,14 @@ export class EditCompanyComponent implements OnInit {
       () => this.Location.back(),
       (err) => console.error(err)
     )
+  }
+  
+  updateUrl(event) {
+    if(this.company.pic_url_old !== "" && this.company.pic_url_old !== event.srcElement.currentSrc) {
+      this.pic_url = this.company.pic_url_old
+    }
+    else {
+      this.pic_url = '../../assets/img/placeholder.png'
+    }
   }
 }

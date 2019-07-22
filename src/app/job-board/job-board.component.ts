@@ -1,10 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
-import { Observable } from 'rxjs'
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core'
+import { Observable, Subscription } from 'rxjs'
 import { ActivatedRoute, Router } from '@angular/router'
 import { PageEvent } from '@angular/material/paginator'
 
 import { Job } from '../job'
 import { JobService } from '../job.service'
+import { OptionsService } from '../options.service'
 // import { EventEmitter } from 'events';
 
 @Component({
@@ -12,7 +13,7 @@ import { JobService } from '../job.service'
   templateUrl: './job-board.component.html',
   styleUrls: ['./job-board.component.css']
 })
-export class JobBoardComponent implements OnInit {
+export class JobBoardComponent implements OnInit, OnDestroy {
   // @Input() job:Job
   // @Output() job_ad: EventEmitter<Job> = new EventEmitter()
   logged_in: boolean
@@ -22,13 +23,23 @@ export class JobBoardComponent implements OnInit {
   page: number
   routePage: number
   pageEvent = PageEvent
+  _querySub: Subscription
+  sortValue: string
+  sorts: any[]
 
   constructor(public jobService: JobService,
               private route: ActivatedRoute,
-              private router: Router
+              private router: Router,
+              private optionsService: OptionsService
             ) { }
 
   ngOnInit() {
+    this.sorts = []
+    this.optionsService.loadData().subscribe(
+      res => this.sorts = res.data.sorts,
+      err => console.error(err)
+    )
+    this.sortValue = "Sort: Latest to Oldest"
     this.loading = true
     this.jobs = []
     this.logged_in = false
@@ -46,23 +57,18 @@ export class JobBoardComponent implements OnInit {
       }
       this.getJobsByPage(this.page)
     })
+
+    this._querySub = this.route.queryParamMap.subscribe(
+      (res:any) => {
+        this.getJobsByPage(this.page, res.params.order, res.params.how)
+      },
+      err => console.error(err)
+    )
   }
 
-  // getAllJobs() {
-  //   this.jobService.getAllJobs().subscribe(
-  //     (res) => {
-  //       console.log(res.data)
-  //       this.jobs = res.data
-  //     },
-  //     (err) => {
-  //       console.error(err)
-  //     }
-  //   )
-  // }
-
-  getJobsByPage(page:number) {
+  getJobsByPage(page:number, order?:string, how?:string) {
     // const start = 10 * (this.page - 1)
-    this.jobService.getJobsPerPage(page).subscribe(
+    this.jobService.getJobsPerPage(page, null, order, how).subscribe(
       (res) => {
         console.log(res.data)
         this.count = res.data.count
@@ -81,4 +87,14 @@ export class JobBoardComponent implements OnInit {
     this.router.navigate([`../jobs/`, event.pageIndex + 1])
   }
 
+  selected(event) {
+    console.log(event.source.value)
+    this.sortValue = event.source.value
+    const options = this.sorts[event.source.value]
+    this.router.navigate([`../jobs/${this.page}`], {queryParams: {order:options.order, how:options.how}})
+  }
+
+  ngOnDestroy() {
+    this._querySub.unsubscribe()
+  }
 }

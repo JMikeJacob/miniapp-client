@@ -57,6 +57,10 @@ import { ErrorModalComponent } from './error-modal/error-modal.component';
 import { ChoiceModalComponent } from './choice-modal/choice-modal.component';
 import { LoadingComponent } from './loading/loading.component';
 
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+
+const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,7 +117,26 @@ import { LoadingComponent } from './loading/loading.component';
     CustomMaterialModule,
     NgbPaginationModule,
     NgbModalModule,
-    QuillModule.forRoot()
+    QuillModule.forRoot({
+      modules: {
+        toolbar: [
+              ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+              ['blockquote', 'code-block'],
+              [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+              [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+              [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+              [{ 'direction': 'rtl' }],                         // text direction
+              [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+              [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+              [{ 'font': [] }],
+              [{ 'align': [] }],
+              ['clean']
+        ]
+      }
+    }),
+    SocketIoModule.forRoot(config)
   ],
   providers: [
     CookieService,
@@ -125,7 +148,8 @@ import { LoadingComponent } from './loading/loading.component';
   bootstrap: [AppComponent],
   entryComponents: [
     ChoiceModalComponent,
-    LoadingComponent
+    LoadingComponent,
+    SignupSplitComponent
   ]
 })
 export class AppModule { }

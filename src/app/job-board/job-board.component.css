@@ -1,5 +1,10 @@
 .container {
     padding: 1em;
+    background-color: white;
+}
+
+.list-group-item {
+    padding:0;
 }
 
 .list-group-item:hover {

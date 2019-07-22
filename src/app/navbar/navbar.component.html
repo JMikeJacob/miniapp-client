@@ -1,11 +1,13 @@
-<nav class="navbar navbar-expand-sm navbar-dark static-top">
-    <a class="navbar-brand" routerLink="/" >JobSeeker</a>
+<nav class="navbar navbar-expand-sm navbar-light">
+    <a class="navbar-brand" routerLink="/" >
+        <img src="../../assets/img/logo.png" />
+    </a>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
             <a class="nav-link" routerLink="/jobs">Explore</a>
         </li>
         <li class="nav-item">
-        <a class="nav-link" routerLink="/signup">Sign Up</a>
+        <a class="nav-link" (click)="signup()" href="javascript:;">Sign Up</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" routerLink="/login">Log In</a>

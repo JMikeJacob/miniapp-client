@@ -5,3 +5,7 @@ mat-form-field {
 .btn {
     margin-bottom:0.5em;
 }
+
+.container {
+    background-color: white;
+}

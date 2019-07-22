@@ -1,6 +1,6 @@
-<div class="container">
+<div class="container rounded">
     <div class="row">
-        <div class="col-sm-6 float-sm-left">
+        <div class="col-sm-12 float-sm-left">
             <button class="btn btn-info" (click)="goBack()">Return to Job Board</button>
         </div>
     </div>
@@ -26,7 +26,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <p>{{job.company_name}}</p>
+                            <a routerLink="../../../company/{{job.posted_by_id}}" [queryParams]="{from:'post'}">{{job.company_name}}</a><br/>
                             <p>{{job.job_location}}</p>
                         </div>
                     </div>
