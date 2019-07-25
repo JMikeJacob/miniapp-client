@@ -1,43 +1,49 @@
 <div class="container border">
+        
     <div *ngIf="!loading">
-        <div *ngIf="jobs.length > 0">
-            <div class="row">
-                <div class="col pull-right">
-                    <mat-form-field> 
-                        <mat-select [(value)]="sortValue" (selectionChange)="selected($event)" name="sort" disableOptionCentering>
-                            <mat-option value="Sort: Alphabetical A to Z">Alphabetical A to Z</mat-option>
-                            <mat-option value="Sort: Alphabetical Z to A">Alphabetical Z to A</mat-option>
-                            <mat-option value="Sort: Latest to Oldest">Latest to Oldest</mat-option>
-                            <mat-option value="Sort: Oldest to Latest">Oldest to Latest</mat-option>
-                            <mat-option value="Sort: Nearest Deadline">Nearest Deadline</mat-option>
-                            <mat-option value="Sort: Farthest Deadline">Farthest Deadline</mat-option>
-                        </mat-select>
-                    </mat-form-field>
+            <app-search-bar (searchEvent)="searchEventHandler($event)" [term]="search" style="padding:0.5em"></app-search-bar>
+            <app-filter-bar (filterEvent)="filterEventHandler($event)" [filters]="filter" style="padding:0.5em"></app-filter-bar>
+        <div *ngIf="!querying">
+            <div *ngIf="jobs.length > 0">
+                <div class="row">
+                    <div class="col pull-right">
+                        <mat-form-field> 
+                            <mat-select [(value)]="sortValue" (selectionChange)="selected($event)" name="sort" disableOptionCentering>
+                                <mat-option value="Sort: Alphabetical A to Z">Alphabetical A to Z</mat-option>
+                                <mat-option value="Sort: Alphabetical Z to A">Alphabetical Z to A</mat-option>
+                                <mat-option value="Sort: Latest to Oldest">Latest to Oldest</mat-option>
+                                <mat-option value="Sort: Oldest to Latest">Oldest to Latest</mat-option>
+                                <mat-option value="Sort: Nearest Deadline">Nearest Deadline</mat-option>
+                                <mat-option value="Sort: Farthest Deadline">Farthest Deadline</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="list-group">
-                        <ng-container *ngFor="let job of jobs">
-                            <div class="list-group-item rounded-0">
-                                <app-job-ad [job]=job></app-job-ad>
-                            </div>
-                        </ng-container>
+                <div class="row">
+                    <div class="col">
+                        <div class="list-group">
+                            <ng-container *ngFor="let job of jobs">
+                                <div class="list-group-item rounded-0">
+                                    <app-job-ad [job]=job></app-job-ad>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <mat-paginator #paginator [length]="count"
+                            [pageSize]="1"
+                            [pageIndex]="page - 1"
+                            (page)= "pageEvent = loadPage($event)"
+                        ></mat-paginator>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <mat-paginator #paginator [length]="count"
-                        [pageSize]="20"
-                        [pageIndex]="page - 1"
-                        (page)= "pageEvent = loadPage($event)"
-                    ></mat-paginator>
-                </div>
-            </div>
-        </div>
         <div *ngIf="jobs.length === 0">
             <p>No jobs posted.</p>
         </div>
+
+    </div>
     </div>
 </div>

@@ -50,7 +50,7 @@ export class EmployerComponent implements OnInit {
 
   removeNotifs() {
     this.notifs = []
-    this.notificationService.editNotification("remove")
+    this.notificationService.editNotification("remove not navbar")
   }
 
   ngOnDestroy() {

@@ -56,7 +56,7 @@ const routes: Routes = [
     { path: 'apps/:page', component: SeekerApplicationsComponent },
     { path: 'jobs', children: [
       { path: '', redirectTo: '1', pathMatch:'full' },
-      { path: ':page', component: SeekerJobBoardComponent },
+      { path: ':page', component: JobBoardComponent },
       { path: 'recommended/:page', component:SeekerRecommendedComponent },
       { path: 'post/:id', component: SeekerJobPostComponent }
     ]},

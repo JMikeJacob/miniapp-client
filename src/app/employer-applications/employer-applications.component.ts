@@ -65,7 +65,7 @@ export class EmployerApplicationsComponent implements OnInit {
     )
     this._removerSub = this.notificationService.editNotification$.subscribe(
       res => {
-        if(res === "remove") {
+        if(res === "remove" || res === "remove not navbar") {
           this.notifs = []
           this.app_count = 0
         }
@@ -102,7 +102,7 @@ export class EmployerApplicationsComponent implements OnInit {
 
   removeNotifs() {
     this.notifs = []
-    this.notificationService.editNotification("remove")
+    this.notificationService.editNotification("remove not navbar")
   }
 
   ngOnDestroy() {

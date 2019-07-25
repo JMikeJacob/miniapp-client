@@ -7,7 +7,9 @@ import { MatFormFieldModule,
         MatPaginatorModule,
         MatSlideToggleModule,
         MatButtonModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatChipsModule,
+        MatIconModule
          } from '@angular/material'
 
 @NgModule({
@@ -21,7 +23,9 @@ import { MatFormFieldModule,
     MatPaginatorModule,
     MatButtonModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatIconModule
   ],
   exports: [
     MatFormFieldModule,
@@ -32,7 +36,9 @@ import { MatFormFieldModule,
     MatPaginatorModule,
     MatButtonModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatIconModule
   ]
 })
 export class CustomMaterialModule { }

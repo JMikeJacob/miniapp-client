@@ -32,7 +32,7 @@
             <div class="row">
                 <div class="col">
                     <mat-paginator #paginator [length]="count"
-                        [pageSize]="20"
+                        [pageSize]="limit"
                         [pageIndex]="page - 1"
                         (page)= "pageEvent = loadPage($event)"
                     ></mat-paginator>

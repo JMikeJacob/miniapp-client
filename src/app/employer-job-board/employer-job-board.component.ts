@@ -27,6 +27,7 @@ export class EmployerJobBoardComponent implements OnInit {
   _querySub: Subscription
   sortValue: string
   sorts: any[]
+  limit: number
 
   //testing
   id: number
@@ -39,6 +40,7 @@ export class EmployerJobBoardComponent implements OnInit {
             ) { }
 
   ngOnInit() {
+    this.limit = 5
     this.loading = true
     this.count = 0
     this.id = +this.cookieService.get('posted_by_id')
@@ -72,21 +74,9 @@ export class EmployerJobBoardComponent implements OnInit {
     })
   }
 
-  // getAllJobs() {
-  //   this.jobService.getAllJobs().subscribe(
-  //     (res) => {
-  //       console.log(res.data)
-  //       this.jobs = res.data
-  //     },
-  //     (err) => {
-  //       console.error(err)
-  //     }
-  //   )
-  // }
-
   getJobsByPageEmployer(page:number, order?: string, how?:string) {
     // const start = 10 * (this.page - 1)
-    this.jobService.getJobsPerPageEmployer(this.id,page,null,order,how).subscribe(
+    this.jobService.getJobsPerPageEmployer(this.id,page,this.limit,order,how).subscribe(
       (res) => {
         console.log(res.data)
         this.count = res.data.count

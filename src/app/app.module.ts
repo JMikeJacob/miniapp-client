@@ -58,6 +58,8 @@ import { ChoiceModalComponent } from './choice-modal/choice-modal.component';
 import { LoadingComponent } from './loading/loading.component';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { FilterBarComponent } from './filter-bar/filter-bar.component';
+import { SearchBarComponent } from './search-bar/search-bar.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
@@ -106,7 +108,9 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
     ProfileComponent,
     ErrorModalComponent,
     ChoiceModalComponent,
-    LoadingComponent
+    LoadingComponent,
+    FilterBarComponent,
+    SearchBarComponent
   ],
   imports: [
     BrowserModule,

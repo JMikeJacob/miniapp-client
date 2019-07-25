@@ -28,7 +28,7 @@ export class EmployerNavbarComponent implements OnInit {
     this._notifSub = this.notificationService.notification.subscribe(
       notif => this.notifCount = notif.count
     )
-    this._removerSub = this.notificationService.editNotification$.pipe(last()).subscribe(
+    this._removerSub = this.notificationService.editNotification$.pipe().subscribe(
       res => {
         console.error(res)
         if(res ==="remove") this.notifCount = 0

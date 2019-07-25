@@ -34,11 +34,13 @@ export class JobService {
     )
   }
 
-  getJobsPerPage(start:number, limit?:number, order?:string, how?: string): Observable<any> {
+  getJobsPerPage(start:number, limit?:number, order?:string, how?: string, filter?: string, search?:string): Observable<any> {
     let url = `${this.serverUrl}/jobs/page/${start}?=`
     if(limit) url += `&limit=${limit}`
     if(order) url += `&order=${order}`
     if(how) url +=`&how=${how}`
+    if(filter) url += `&${filter}`
+    if(search) url += `&search=${search}`
     return this.http.get(url, httpOptions).pipe(
       catchError(this.handleError<any>('getJobsPerPage'))
     )
