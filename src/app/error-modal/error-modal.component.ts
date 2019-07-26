@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 
 @Component({
   selector: 'app-error-modal',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ErrorModalComponent implements OnInit {
 
-  constructor() { }
+  @Input() dialog: any
+
+  constructor(private activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }
 
+  closeModal() {
+    this.activeModal.close('closed')
+  }
 }

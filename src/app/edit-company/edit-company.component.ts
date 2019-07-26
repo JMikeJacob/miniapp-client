@@ -17,6 +17,7 @@ import { CookieService } from 'ngx-cookie-service'
 import { FileService } from '../file.service'
 
 import { LoadingComponent } from '../loading/loading.component'
+import { ErrorModalComponent } from '../error-modal/error-modal.component'
 
 const image_exts = [
   "jpeg",
@@ -186,7 +187,26 @@ export class EditCompanyComponent implements OnInit {
           const contenttype = 'image/' + this.pic.split('.')[this.pic.split('.').length-1]
           this.fileService.uploadToAWSS3(res.data.pic_url,contenttype, this.file).subscribe(
             () => this.editCompany(res.data.pic_url, modalRef),
-            (err) => console.error(err)
+            (err) => {
+              console.error(err)
+              modalRef.close()
+              const errorModal = this.modalService.open(ErrorModalComponent)
+              errorModal.componentInstance.dialog = {
+                header: "Update Failed",
+                message: "There was an error in updating your profile. Please try again."
+              }
+              errorModal.result.then(
+                () => {
+                  this.editCompanyService.sendCompany(this.company).subscribe(
+                    () => this.Location.back(),
+                    (err) => console.error(err)
+                  )
+                },
+                (err) => {
+                  console.error(err)
+                }
+              )
+            }
           )    
         },
         (err) => {

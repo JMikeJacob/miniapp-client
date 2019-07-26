@@ -153,7 +153,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
   entryComponents: [
     ChoiceModalComponent,
     LoadingComponent,
-    SignupSplitComponent
+    SignupSplitComponent,
+    ErrorModalComponent
   ]
 })
 export class AppModule { }

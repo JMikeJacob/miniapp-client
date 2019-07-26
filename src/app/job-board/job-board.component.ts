@@ -117,7 +117,7 @@ export class JobBoardComponent implements OnInit, OnDestroy {
     // const start = 10 * (this.page - 1)
     console.log("firepower")
     this.querying = true
-    this.jobService.getJobsPerPage(page, 1, order, how, filter, search).subscribe(
+    this.jobService.getJobsPerPage(page, 5, order, how, filter, search).subscribe(
       (res) => {
         console.log(res.data)
         this.count = res.data.count
